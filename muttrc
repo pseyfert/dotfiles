@@ -1,0 +1,8 @@
+# mainly written for lxplus, but also works on laptop
+set folder=imaps://pseyfert@imap.cern.ch
+set spoolfile=+INBOX
+set sort = threads
+set sort_aux = reverse-last-date-received
+set timeout=10
+# override default addresses like <pseyfert@lxplus004.cern.ch>
+set from="Paul Seyfert <Paul.Seyfert@cern.ch>"
