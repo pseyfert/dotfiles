@@ -1,1 +1,45 @@
+! yeahconsole
+yeahconsole*term:urxvt
+yeahconsole*background:black
+yeahconsole*foreground:white
+! shellex
+shellex*scrollBar: false
+shellex.pos: focus
+shellex.font: xft:Inconsolata:style=Regular:pixelsize=15:antialias=true:hinting=full
+shellex.letterSpace: -1
+! fallback
+shellex*geometry: 170x1
+! urxvt plugins
+URxvt.perl-ext-common: default,font-size,selection-to-clipboard
+URxvt.keysym.C-Up:     font-size:increase
+URxvt.keysym.C-Down:   font-size:decrease
+URxvt.keysym.C-equal:  font-size:reset
+URxvt.keysym.C-slash:  font-size:show
+! urxvt history
+URxvt*saveLines: 12000
+! urxvt size setup (for non-tiling window managers, optimised for X220)
+URxvt*geometry: 111x54
+! urxvt font setup
 URxvt.font: xft:PragmataProMono:style=Regular:size=9:antialising=true:hinting=true:autohint=true:hint=full:rgba=rgb
+URxvt.letterSpace: -1
+! urxvt double click highlight
+! ignore python prompt
+! https://github.com/ssokolow/profile/blob/23a961dc9acd1e23a91296384dfdd1bb0a490556/home/.Xresources#L217
+URxvt.selection.pattern-0: >>>[ ]+(.+)
+! ignore continued python prompt
+URxvt.selection.pattern-1: \.\.\.[ ]+(.+)
+! ignore ipython prompt
+URxvt.selection.pattern-2: In[ ]\[[0-9]+\]:[ ](.+)
+! ignore continued python prompt
+URxvt.selection.pattern-3: [ ][ ][ ]\.\.\.[ ]+(.+)
+! german cli output
+URxvt.selection.pattern-4: .*[»]([^»«]+)[«].*
+! ROOT Print output
+! The print string is "*Br%5d :%-9s : %-54s *"
+! I.e. always at least one whitespace, colon, then the interesting stuff
+URxvt.selection.pattern-5: .+[ ]:([^: ]+).*
+! grep items out of stuff like LD_LIBRARY_PATH
+! thanks to http://stackoverflow.com/questions/4697882/how-can-i-find-all-matches-to-a-regular-expression-in-python for debugging
+! I do not want to ruin matching of http://some/url
+!URxvt.selection.pattern-6: ([:alnum:]://[^: ]+)
+URxvt.selection.pattern-6: ([^: ]+)
