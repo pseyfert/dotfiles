@@ -43,3 +43,5 @@ URxvt.selection.pattern-5: .+[ ]:([^: ]+).*
 ! I do not want to ruin matching of http://some/url
 !URxvt.selection.pattern-6: ([:alnum:]://[^: ]+)
 URxvt.selection.pattern-6: ([^: ]+)
+! git diff filename
+URxvt.selection.pattern-7: ^[+-][+-][+-][ ][ab]/(.+)
