@@ -44,8 +44,8 @@ bindsym Mod1+F2 exec /home/pseyfert/.local/bin/shellex
 bindsym $mod+z exec i3lock
 bindsym $mod+Shift+z exec xtrlock
 bindsym $mod+p exec scrot
-bindsym $mod+Shift p exec scrot -s
-bindsym $mod+Ctrl p exec import xwindow.png
+bindsym $mod+Shift+p exec scrot -s
+bindsym $mod+Ctrl+p exec import xwindow.png
 # There also is the (new) i3-dmenu-desktop which only displays applications
 # shipping a .desktop file. It is a wrapper around dmenu, so you need that
 # installed.
