@@ -1,0 +1,18 @@
+[user]
+	email = pseyfert.mathphys@gmail.com
+	name = Paul Seyfert
+[diff]
+	tool = vimdiff
+[difftool]
+	prompt = false
+[merge]
+	tool = vimdiff
+	conflictstyle = diff3
+[mergetool]
+	prompt = false
+# where krb doesn't work
+[url "ssh://git@gitlab.cern.ch:7999"]
+  insteadOf = https://:@gitlab.cern.ch:8443
+# where krb works
+# [url "https://:@gitlab.cern.ch:8443"]
+#   insteadOf = ssh://git@gitlab.cern.ch:7999
