@@ -11,8 +11,10 @@
 [mergetool]
 	prompt = false
 # where krb doesn't work
-[url "ssh://git@gitlab.cern.ch:7999"]
-  insteadOf = https://:@gitlab.cern.ch:8443
+# [url "ssh://git@gitlab.cern.ch:7999"]
+#   insteadOf = https://:@gitlab.cern.ch:8443
 # where krb works
-# [url "https://:@gitlab.cern.ch:8443"]
-#   insteadOf = ssh://git@gitlab.cern.ch:7999
+[url "https://:@gitlab.cern.ch:8443"]
+  insteadOf = ssh://git@gitlab.cern.ch:7999
+[http]
+	emptyAuth = true
