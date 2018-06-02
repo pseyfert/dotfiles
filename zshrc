@@ -23,3 +23,6 @@ fi
 PROMPT="%(?..%? )%(!.ROOT.%n)@%m %~ "         
 for (( indent = ${TOPSHLVL} ; indent <= ${SHLVL} ; ++indent )); do PROMPT="${PROMPT}>"; done
 PROMPT="${PROMPT} "       
+
+# display time at the right end of the command line
+RPROMPT="%*"
