@@ -26,3 +26,10 @@ PROMPT="${PROMPT} "
 
 # display time at the right end of the command line
 RPROMPT="%*"
+
+# Have a bell-character put out, everytime a command finishes. This will set the urgent-hint,
+# if the terminal is configured accordingly
+# thanks to @stapelberg
+bellchar=$'\a'
+zle-line-init () { echo -n "$bellchar" }
+zle -N zle-line-init

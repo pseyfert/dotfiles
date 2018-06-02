@@ -45,3 +45,7 @@ URxvt.selection.pattern-5: .+[ ]:([^: ]+).*
 URxvt.selection.pattern-6: ([^: ]+)
 ! git diff filename
 URxvt.selection.pattern-7: ^[+-][+-][+-][ ][ab]/(.+)
+
+! attract attention to terminal when the bell rings
+! from @stapelberg
+URxvt.urgentOnBell: true
