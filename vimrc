@@ -95,3 +95,12 @@ let g:tex_flavor='latex'
 " for syntax highlighting, consider bbx and def as tex files
 au BufRead,BufNewFile *.def setfiletype tex
 au BufRead,BufNewFile *.bbx setfiletype tex
+
+
+
+""" TODO
+
+" * vimlhcb (syntax highlighting for cmt files)
+" * py-docstring
+" * doxygen something
+" * vim-autopep8
