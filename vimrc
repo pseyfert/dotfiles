@@ -65,26 +65,52 @@ let g:flake8_show_in_file=1
 
 "" C/C++/JS/... formatting
 "
+" manual filetype overriding before other things (allow ft switches)
+" consider *.icpp as c++
+" http://vim.wikia.com/wiki/Forcing_Syntax_Coloring_for_files_with_odd_extensions
+au BufRead,BufNewFile *.icpp setfiletype cpp
+
 " run clang-format on ^K for a marked section (^I for the entire file, try to
 " jump back to where started with ``)
 " TODO:
 "  - do this depending on filetype (e.g. not for latex, vimrc, python)
 "  - instead autopep8 for python
-if has('python3')
-  map <C-K> :py3f /usr/share/clang/clang-format.py<cr>
-  map <C-I> ggV``G:py3f /usr/share/clang/clang-format.py<cr>``
-elseif has('python')
-  map <C-K> :p3f /usr/share/clang/clang-format.py<cr>
-  map <C-I> ggV``G:pyf /usr/share/clang/clang-format.py<cr>``
+"  - ensure lsb_release is installed
+"  - nasty: g:os comes with trailing linefeed
+let g:os=system('echo ${$(lsb_release -d)[2]}')
+if g:os == "Scientific\n"
+  let $PATH="/cvmfs/lhcb.cern.ch/lib/lcg/external/llvm/3.9/x86_64-slc6/bin:" . $PATH
+  let $LD_LIBRARY_PATH="/cvmfs/lhcb.cern.ch/lib/lcg/releases/gcc/4.9.3/x86_64-slc6/lib64:/cvmfs/lhcb.cern.ch/lib/lcg/external/llvm/3.9/x86_64-slc6/lib/:" . $LD_LIBRARY_PATH
+  map <C-K> :pyf /cvmfs/lhcb.cern.ch/lib/lcg/external/llvm/3.7/x86_64-slc6/share/clang/clang-format.py<cr>
+  map <C-I> ggV``G:pyf /cvmfs/lhcb.cern.ch/lib/lcg/external/llvm/3.7/x86_64-slc6/share/clang/clang-format.py<cr>``
+elseif g:os == "CentOS\n"
+  let $PATH="/cvmfs/lhcb.cern.ch/lib/lcg/external/llvm/3.9/x86_64-centos7/bin/:/afs/cern.ch/sw/lcg/external/llvm/3.9/x86_64-centos7/bin:" . $PATH
+  let $LD_LIBRARY_PATH="/cvmfs/lhcb.cern.ch/lib/lcg/releases/gcc/4.9.3/x86_64-centos7/lib64/:/afs/cern.ch/sw/lcg/external/gcc/4.9.3/x86_64-centos7/lib64:/cvmfs/lhcb.cern.ch/lib/lcg/external/llvm/3.9/x86_64-centos7/lib/lib:/afs/cern.ch/sw/lcg/external/llvm/3.9/x86_64-centos7/lib:" . $LD_LIBRARY_PATH
+  map <C-K> :pyf /cvmfs/lhcb.cern.ch/lib/lcg/external/llvm/3.9/x86_64-centos7/share/clang/clang-format.py<cr>
+  map <C-I> ggV``G:pyf /cvmfs/lhcb.cern.ch/lib/lcg/external/llvm/3.9/x86_64-centos7/share/clang/clang-format.py<cr>``
+elseif g:os == "Arch\n"
+  if has('python3')
+    map <C-K> :py3f /usr/share/clang/clang-format.py<cr>
+    map <C-I> ggV``G:py3f /usr/share/clang/clang-format.py<cr>``
+  elseif has('python')
+    map <C-K> :pyf /usr/share/clang/clang-format.py<cr>
+    map <C-I> ggV``G:pyf /usr/share/clang/clang-format.py<cr>``
+  endif
+elseif g:os == "Debian\n"
+  " Tears go here.
+  " In Debian stable we get clang 3.8 which comes with clang-format for python2
+  " only. But vim comes with python3 only.
+  " Debian testing seems okay.
+  " TODO:
+  "  - avoid hard coded version?
+  "  - detect host (local patch)
+  map <C-K> :py3f /usr/share/clang/clang-format-4.0/clang-format.py<cr>
+  map <C-I> ggV``G:py3f /usr/share/clang/clang-format-4.0/clang-format.py<cr>``
 endif
 
 " ycm here seems to be built for python2
 let g:ycm_server_python_interpreter='/usr/bin/python2'
 let g:ycm_confirm_extra_conf = 0
-
-" consider *.icpp as c++
-" http://vim.wikia.com/wiki/Forcing_Syntax_Coloring_for_files_with_odd_extensions
-au BufRead,BufNewFile *.icpp setfiletype cpp
 
 
 "" LATEX
