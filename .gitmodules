@@ -1,0 +1,6 @@
+[submodule "vim/pathogen"]
+	path = vim/pathogen
+	url = https://github.com/tpope/vim-pathogen.git
+[submodule "vim/bundle/linediff.vim"]
+	path = vim/bundle/linediff.vim
+	url = https://github.com/AndrewRadev/linediff.vim.git

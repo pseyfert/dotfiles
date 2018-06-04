@@ -1,3 +1,5 @@
+" use the pathogen plugin manager
+execute pathogen#infect()
 " syntax highlighting on by default
 syntax on
 " highlight search results
