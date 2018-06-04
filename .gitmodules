@@ -4,3 +4,6 @@
 [submodule "vim/bundle/linediff.vim"]
 	path = vim/bundle/linediff.vim
 	url = https://github.com/AndrewRadev/linediff.vim.git
+[submodule "vim/bundle/vim-autopep8"]
+	path = vim/bundle/vim-autopep8
+	url = https://github.com/tell-k/vim-autopep8.git
