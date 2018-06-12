@@ -137,4 +137,4 @@ au BufRead,BufNewFile *.bbx setfiletype tex
 " * vimlhcb (syntax highlighting for cmt files)
 " * py-docstring
 " * doxygen something
-" * vim-autopep8
+" * go format
