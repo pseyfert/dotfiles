@@ -29,6 +29,11 @@ set shiftwidth=2
 set expandtab
 " This enables automatic indentation as you type.
 filetype indent on
+" indent on ^i
+" not overly useful in the default form, I'm mainly interested in the
+" language specific functions below, and have the same UI when falling back to =.
+nmap <C-I> =gg``=G
+vmap <C-I> =
 
 """ NAVIGATION
 " enable the matchit plugin (jumping between opening/closing xml/html tags and
@@ -58,6 +63,7 @@ vnoremap t :Linediff<CR>
 "
 " indendation
 autocmd FileType python setlocal tabstop=4 shiftwidth=4 softtabstop=4 expandtab
+autocmd FileType python noremap <C-I> :call Autopep8()<cr>
 " code checking upon write
 autocmd BufWritePost *.py call Flake8()
 let g:flake8_show_in_file=1
@@ -81,20 +87,20 @@ let g:os=system('echo ${$(lsb_release -d)[2]}')
 if g:os == "Scientific\n"
   let $PATH="/cvmfs/lhcb.cern.ch/lib/lcg/external/llvm/3.9/x86_64-slc6/bin:" . $PATH
   let $LD_LIBRARY_PATH="/cvmfs/lhcb.cern.ch/lib/lcg/releases/gcc/4.9.3/x86_64-slc6/lib64:/cvmfs/lhcb.cern.ch/lib/lcg/external/llvm/3.9/x86_64-slc6/lib/:" . $LD_LIBRARY_PATH
-  map <C-K> :pyf /cvmfs/lhcb.cern.ch/lib/lcg/external/llvm/3.7/x86_64-slc6/share/clang/clang-format.py<cr>
-  map <C-I> ggV``G:pyf /cvmfs/lhcb.cern.ch/lib/lcg/external/llvm/3.7/x86_64-slc6/share/clang/clang-format.py<cr>``
+  autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino vmap <C-I> :pyf /cvmfs/lhcb.cern.ch/lib/lcg/external/llvm/3.7/x86_64-slc6/share/clang/clang-format.py<cr>
+  autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino nmap <C-I> ggV``G:pyf /cvmfs/lhcb.cern.ch/lib/lcg/external/llvm/3.7/x86_64-slc6/share/clang/clang-format.py<cr>``
 elseif g:os == "CentOS\n"
   let $PATH="/cvmfs/lhcb.cern.ch/lib/lcg/external/llvm/3.9/x86_64-centos7/bin/:/afs/cern.ch/sw/lcg/external/llvm/3.9/x86_64-centos7/bin:" . $PATH
   let $LD_LIBRARY_PATH="/cvmfs/lhcb.cern.ch/lib/lcg/releases/gcc/4.9.3/x86_64-centos7/lib64/:/afs/cern.ch/sw/lcg/external/gcc/4.9.3/x86_64-centos7/lib64:/cvmfs/lhcb.cern.ch/lib/lcg/external/llvm/3.9/x86_64-centos7/lib/lib:/afs/cern.ch/sw/lcg/external/llvm/3.9/x86_64-centos7/lib:" . $LD_LIBRARY_PATH
-  map <C-K> :pyf /cvmfs/lhcb.cern.ch/lib/lcg/external/llvm/3.9/x86_64-centos7/share/clang/clang-format.py<cr>
-  map <C-I> ggV``G:pyf /cvmfs/lhcb.cern.ch/lib/lcg/external/llvm/3.9/x86_64-centos7/share/clang/clang-format.py<cr>``
+  autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino vmap <C-I> :pyf /cvmfs/lhcb.cern.ch/lib/lcg/external/llvm/3.9/x86_64-centos7/share/clang/clang-format.py<cr>
+  autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino nmap <C-I> ggV``G:pyf /cvmfs/lhcb.cern.ch/lib/lcg/external/llvm/3.9/x86_64-centos7/share/clang/clang-format.py<cr>``
 elseif g:os == "Arch\n"
   if has('python3')
-    map <C-K> :py3f /usr/share/clang/clang-format.py<cr>
-    map <C-I> ggV``G:py3f /usr/share/clang/clang-format.py<cr>``
+    autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino vmap <C-I> :py3f /usr/share/clang/clang-format.py<cr>
+    autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino nmap <C-I> ggV``G:py3f /usr/share/clang/clang-format.py<cr>``
   elseif has('python')
-    map <C-K> :pyf /usr/share/clang/clang-format.py<cr>
-    map <C-I> ggV``G:pyf /usr/share/clang/clang-format.py<cr>``
+    autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino vmap <C-I> :pyf /usr/share/clang/clang-format.py<cr>
+    autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino nmap <C-I> ggV``G:pyf /usr/share/clang/clang-format.py<cr>``
   endif
 elseif g:os == "Debian\n"
   " Tears go here.
@@ -104,8 +110,8 @@ elseif g:os == "Debian\n"
   " TODO:
   "  - avoid hard coded version?
   "  - detect host (local patch)
-  map <C-K> :py3f /usr/share/clang/clang-format-4.0/clang-format.py<cr>
-  map <C-I> ggV``G:py3f /usr/share/clang/clang-format-4.0/clang-format.py<cr>``
+  autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino vmap <C-I> :py3f /usr/share/clang/clang-format-4.0/clang-format.py<cr>
+  autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino nmap <C-I> ggV``G:py3f /usr/share/clang/clang-format-4.0/clang-format.py<cr>``
 endif
 
 " ycm here seems to be built for python2
