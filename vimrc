@@ -138,3 +138,6 @@ au BufRead,BufNewFile *.bbx setfiletype tex
 " * py-docstring
 " * doxygen something
 " * go format
+
+let g:licenses_authors_name = 'Paul Seyfert <pseyfert@cern.ch>'
+let g:licenses_copyright_holders_name = 'CERN for the benefit of the LHCb collaboration'
