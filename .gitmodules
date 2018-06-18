@@ -6,10 +6,16 @@
 	url = https://github.com/AndrewRadev/linediff.vim.git
 [submodule "vim/bundle/vim-autopep8"]
 	path = vim/bundle/vim-autopep8
-	url = https://github.com/tell-k/vim-autopep8.git
+	url = git@github.com:pseyfert/vim-autopep8.git
 [submodule "vim/bundle/vim-licenses"]
 	path = vim/bundle/vim-licenses
 	url = git@github.com:pseyfert/vim-licenses.git
 [submodule "vim/bundle/tcomment_vim"]
 	path = vim/bundle/tcomment_vim
 	url = https://github.com/tomtom/tcomment_vim.git
+[submodule "vim/bundle/lhcbvim_org"]
+	path = vim/bundle/lhcbvim_org
+	url = https://:@gitlab.cern.ch:8443/pseyfert/lhcbvim.git
+[submodule "vim/bundle/vim-flake8"]
+	path = vim/bundle/vim-flake8
+	url = https://github.com/nvie/vim-flake8
