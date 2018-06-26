@@ -117,6 +117,8 @@ endif
 " ycm here seems to be built for python2
 let g:ycm_server_python_interpreter='/usr/bin/python2'
 let g:ycm_confirm_extra_conf = 0
+let g:ycm_autoclose_preview_window_after_insertion = 1
+let g:ycm_autoclose_preview_window_after_completion = 1
 
 
 "" LATEX
