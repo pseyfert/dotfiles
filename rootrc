@@ -1,0 +1,9 @@
+Rint.HistSize: 10000
+Rint.HistSave:  9000
+Rint.WelcomeLite: yes
+RooFit.Banner: no
+Canvas.ShowEventStatus:     true
+Canvas.ShowToolTips:        true
+Canvas.ShowToolBar:         true
+
+
