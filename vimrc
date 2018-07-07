@@ -48,6 +48,7 @@ if &diff
  set diffopt+=iwhite
 endif
 " small tweaked wrt defaults for compatibility with syntax highlighting
+" otherwise I end up with red on red (string on diff)
 :hi DiffText term=underline cterm=underline ctermbg=LightMagenta gui=bold guibg=Red
 
 "" LINEDIFF
