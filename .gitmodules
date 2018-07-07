@@ -19,3 +19,6 @@
 [submodule "vim/bundle/vim-flake8"]
 	path = vim/bundle/vim-flake8
 	url = https://github.com/nvie/vim-flake8
+[submodule "vim/bundle/cmakecache-syntax"]
+	path = vim/bundle/cmakecache-syntax
+	url = https://github.com/Neui/cmakecache-syntax.vim.git
