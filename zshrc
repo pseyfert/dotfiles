@@ -17,14 +17,14 @@
 # the greater sign grows with $SHLVL after some offset (the topmost shell in
 # the callstack defines an environment variable)
 
-# if TOPSHLVL is not set, set it to SHLVL              
-if [ ! -v TOPSHLVL ] ; then                            
+# if TOPSHLVL is not set, set it to SHLVL
+if (( ! ${+TOPSHLVL} )) ; then
   export TOPSHLVL=${SHLVL}
 fi
 
-PROMPT="%(?..%? )%(!.ROOT.%n)@%m %~ "         
+PROMPT="%(?..%? )%(!.ROOT.%n)@%m %~ "
 for (( indent = ${TOPSHLVL} ; indent <= ${SHLVL} ; ++indent )); do PROMPT="${PROMPT}>"; done
-PROMPT="${PROMPT} "       
+PROMPT="${PROMPT} "
 
 # display time at the right end of the command line
 RPROMPT="%*"
@@ -38,7 +38,7 @@ bellchar=$'\a'
 zle-line-init () { echo -n "$bellchar" }
 zle -N zle-line-init
 
-## AUDIBLE TERMINAL 
+## AUDIBLE TERMINAL
 # http://stackoverflow.com/questions/171563/whats-in-your-zshrc
 setopt NO_BEEP
 
