@@ -16,5 +16,7 @@
 # where krb works
 [url "https://:@gitlab.cern.ch:8443"]
   insteadOf = ssh://git@gitlab.cern.ch:7999
+[url "git@github.com:"]
+  pushInsteadOf = https://github.com/
 [http]
 	emptyAuth = true

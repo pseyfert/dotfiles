@@ -16,5 +16,5 @@
   // auto foo = bar();
   // std::cout << type(foo) << std::endl;
   gROOT->ProcessLine("#include <boost/type_index.hpp>");
-  gROOT->ProcessLine("template <typename T> auto type(T) { return boost::typeindex::type_id<T>().pretty_name(); }");
+  gROOT->ProcessLine("template <typename T> auto type(T) { return boost::typeindex::type_id_with_cvr<T>().pretty_name(); }");
 }
