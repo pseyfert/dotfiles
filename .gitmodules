@@ -22,3 +22,9 @@
 [submodule "vim/bundle/cmakecache-syntax"]
 	path = vim/bundle/cmakecache-syntax
 	url = https://github.com/Neui/cmakecache-syntax.vim.git
+[submodule "vim/os_dependent_bundle/YouCompleteMe"]
+	path = vim/os_dependent_bundle/YouCompleteMe
+	url = https://github.com/pseyfert/YouCompleteMe.git
+[submodule "vim/os_dependent_bundle/YouCompleteMe.slc6"]
+	path = vim/os_dependent_bundle/YouCompleteMe.slc6
+	url = https://github.com/pseyfert/YouCompleteMe.git

@@ -46,6 +46,9 @@ runtime macros/matchit.vim
 if &diff
  " diff mode
  set diffopt+=iwhite
+ " tweak yet another syntax color + diff color issue (preprocessor magenta on
+ " diff magenta)
+ colorscheme elflord
 endif
 " small tweaked wrt defaults for compatibility with syntax highlighting
 " otherwise I end up with red on red (string on diff)
@@ -59,15 +62,24 @@ endif
 vnoremap t :Linediff<CR>
 
 """ LANGUAGE SPECIFICS
+" TODO:
+"  - do this depending on filetype (e.g. not for latex, vimrc, python)
+"  - instead autopep8 for python
+"  - ensure lsb_release is installed
+"  - nasty: g:os comes with trailing linefeed
+let g:os=system('echo ${$(lsb_release -d)[2]}')
 
 "" PYTHON INDENTATION
 "
 " indendation
 autocmd FileType python setlocal tabstop=4 shiftwidth=4 softtabstop=4 expandtab
-autocmd FileType python noremap <C-I> :call Autopep8()<cr>
-" code checking upon write
-autocmd BufWritePost *.py call Flake8()
-let g:flake8_show_in_file=1
+" TODO: needs fixing on lxplus
+if g:os != "Scientific\n" || g:os != "CentOS\n"
+  autocmd FileType python noremap <C-I> :call Autopep8()<cr>
+  " code checking upon write
+  autocmd BufWritePost *.py call Flake8()
+  let g:flake8_show_in_file=1
+endif
 
 
 "" C/C++/JS/... formatting
@@ -79,12 +91,6 @@ au BufRead,BufNewFile *.icpp setfiletype cpp
 
 " run clang-format on ^K for a marked section (^I for the entire file, try to
 " jump back to where started with ``)
-" TODO:
-"  - do this depending on filetype (e.g. not for latex, vimrc, python)
-"  - instead autopep8 for python
-"  - ensure lsb_release is installed
-"  - nasty: g:os comes with trailing linefeed
-let g:os=system('echo ${$(lsb_release -d)[2]}')
 if g:os == "Scientific\n"
   let $PATH="/cvmfs/lhcb.cern.ch/lib/lcg/external/llvm/3.9/x86_64-slc6/bin:" . $PATH
   let $LD_LIBRARY_PATH="/cvmfs/lhcb.cern.ch/lib/lcg/releases/gcc/4.9.3/x86_64-slc6/lib64:/cvmfs/lhcb.cern.ch/lib/lcg/external/llvm/3.9/x86_64-slc6/lib/:" . $LD_LIBRARY_PATH
@@ -115,11 +121,17 @@ elseif g:os == "Debian\n"
   autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino nmap <C-I> ggV``G:py3f /usr/share/clang/clang-format-4.0/clang-format.py<cr>``
 endif
 
-" ycm here seems to be built for python2
-let g:ycm_server_python_interpreter='/usr/bin/python2'
 let g:ycm_confirm_extra_conf = 0
 let g:ycm_autoclose_preview_window_after_insertion = 1
 let g:ycm_autoclose_preview_window_after_completion = 1
+if g:os == "Scientific\n"
+  " TODO: move away from site-dependent location
+  let g:ycm_global_ycm_extra_conf = "/afs/cern.ch/user/p/pseyfert/.vim/.ycm_extra_conf.py"
+elseif g:os == "Arch\n"
+  " ycm here seems to be built for python2
+  let g:ycm_server_python_interpreter='/usr/bin/python2'
+elseif g:os == "Debian\n"
+endif
 
 
 "" LATEX
