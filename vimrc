@@ -44,11 +44,11 @@ runtime macros/matchit.vim
 "
 "" diff visualisation
 if &diff
- " diff mode
- set diffopt+=iwhite
- " tweak yet another syntax color + diff color issue (preprocessor magenta on
- " diff magenta)
- colorscheme elflord
+  " diff mode
+  set diffopt+=iwhite
+  " tweak yet another syntax color + diff color issue (preprocessor magenta on
+  " diff magenta)
+  colorscheme elflord
 endif
 " small tweaked wrt defaults for compatibility with syntax highlighting
 " otherwise I end up with red on red (string on diff)
@@ -81,6 +81,12 @@ if g:os != "Scientific\n" || g:os != "CentOS\n"
   let g:flake8_show_in_file=1
 endif
 
+
+"" Go
+"
+" indentation (done by vim-go upon write, but for muslce memory)
+autocmd FileType go set noexpandtab copyindent preserveindent softtabstop=0 shiftwidth=4 tabstop=4
+autocmd FileType go noremap <C-I> :GoFmt<cr>
 
 "" C/C++/JS/... formatting
 "
