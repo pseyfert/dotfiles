@@ -135,6 +135,7 @@ if g:os == "Scientific\n"
   let g:ycm_global_ycm_extra_conf = "/afs/cern.ch/user/p/pseyfert/.vim/.ycm_extra_conf.py"
 elseif g:os == "Arch\n"
   " ycm here seems to be built for python2
+  let g:ycm_global_ycm_extra_conf = "/home/pseyfert/.ycm_global_conf.py"
   let g:ycm_server_python_interpreter='/usr/bin/python2'
 elseif g:os == "Debian\n"
 endif
