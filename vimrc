@@ -141,13 +141,15 @@ elseif g:os == "Debian\n"
 endif
 
 " toggle the column with the >> signs
-nnoremap <F5> :call ToggleSignColumn()<cr>
+nnoremap <F5> :call ToggleCopyPasteMode()<cr>
 set signcolumn=auto
-function! ToggleSignColumn()
+function! ToggleCopyPasteMode()
   if &signcolumn == "auto"
     set signcolumn=no
+    set paste
   else
     set signcolumn=auto
+    set nopaste
   endif
 endfunction
 
