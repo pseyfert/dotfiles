@@ -140,6 +140,17 @@ elseif g:os == "Arch\n"
 elseif g:os == "Debian\n"
 endif
 
+" toggle the column with the >> signs
+nnoremap <F5> :call ToggleSignColumn()<cr>
+set signcolumn=auto
+function! ToggleSignColumn()
+  if &signcolumn == "auto"
+    set signcolumn=no
+  else
+    set signcolumn=auto
+  endif
+endfunction
+
 
 "" LATEX
 
@@ -156,10 +167,7 @@ au BufRead,BufNewFile *.bbx setfiletype tex
 
 """ TODO
 
-" * vimlhcb (syntax highlighting for cmt files)
-" * py-docstring
 " * doxygen something
-" * go format
 
 let g:licenses_authors_name = 'Paul Seyfert <pseyfert@cern.ch>'
 let g:licenses_copyright_holders_name = 'CERN for the benefit of the LHCb collaboration'
