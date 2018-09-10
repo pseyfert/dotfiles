@@ -34,3 +34,6 @@
 [submodule "vim/bundle/vim-pydocstring"]
 	path = vim/bundle/vim-pydocstring
 	url = https://github.com/heavenshell/vim-pydocstring.git
+[submodule "vim/bundle/overleaf-commenter"]
+	path = vim/bundle/overleaf-commenter
+	url = https://github.com/pseyfert/overleaf-commenter
