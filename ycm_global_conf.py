@@ -44,7 +44,7 @@ flags = [
 try:
     rootsys = os.environ['ROOTSYS']
     if os.path.isdir(os.path.join(rootsys, 'include')):
-        flags += ['-I'+os.path.isdir(os.path.join(rootsys, 'include'))]
+        flags += ['-I'+os.path.join(rootsys, 'include')]
 except KeyError:
     pass
 
