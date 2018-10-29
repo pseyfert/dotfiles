@@ -1,0 +1,40 @@
+alias "less"="less -R"
+#GREP_OPTIONS="--color=always --exclude='*.pyc' --exclude-dir=.git --exclude-dir=.svn -InH"
+alias -g "GO"="--color=always --exclude='*.pyc' --exclude-dir=.git --exclude-dir=.svn -InH"
+alias -g "grep"="grep GO"
+alias 'svn-meld'='svn diff --diff-cmd="meld"'
+alias -g "NE"="2>/dev/null"
+
+alias 'italian-conjugator'='french-conjugator --lang=it'
+alias 'italian-deconjugator'='french-deconjugator --lang=it'
+
+alias 'git-srm'='git rm --cached'
+alias 'git-svn-update'='git svn rebase'
+alias 'git-svn-commit'='git commit -a && git svn dcommit'
+alias 'git-log'='git log --name-status'
+alias 'git-status-noignore'='git status -u --ignored'
+alias 'git-status-ignoreuntracked'='git status -uno'
+
+alias 'ls'='ls -F --color=auto'
+alias 'll'='ls -lF --color=auto'
+alias 'cal'='cal -3mw'
+alias 'screeny'='import xwindow.png'
+alias 'fixpdf'='gs -o repaired.pdf -dPDFSETTINGS=/prepress -sDEVICE=pdfwrite '
+
+alias "ROOT_ENV"="export CPPFLAGS=\"$CPPFLAGS \`root-config --cflags\` -march=native -O3 -flto -g -Wextra -Wall -Wshadow\" ; export LDLIBS=\"$LDLIBS \`root-config --libs\` -lRooStats -lRooFitCore -lRooFit -lMinuit -lFoam -lMathMore -lTMVA\`\"; export LDFLAGS=\"$LDFLAGS -m64 -g -march=native -flto -fuse-ld=gold\"; export CPP=c++; export CXX=c++; export CC=c++"
+
+alias 'vga-stuff-off'="xrandr --output LVDS-1 --auto --output VGA-1 --off --output HDMI-2 --off --output DP-1 --off --output DP-2 --off"
+alias 'vga-clone-1024'="(xrandr --output VGA-1 --mode 1024x768 --same-as LVDS-1)"
+alias 'vga-clone-auto'="(xrandr --output VGA-1 --auto --same-as LVDS-1 --preferred) "
+alias 'vga-dual-auto'="(xrandr --output VGA-1 --auto --right-of LVDS-1 --preferred --output LVDS-1 --auto)"
+alias 'vga-dual-DP-both'="(xrandr --output DP-2 --auto --rotate normal --preferred --output LVDS-1 --off --output VGA-1 --auto --rotate normal --right-of DP-2)"
+alias 'fix-intern'="(xrandr --output LVDS-1 --auto)"
+alias 'int-off'="(xrandr --output LVDS-1 --off)"
+
+alias -g 'cmake-gen'='cmake -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_RULE_MESSAGES=NO -DCMAKE_EXPORT_COMPILE_COMMANDS=YES -DCMAKE_CXX_STANDARD=17 -DCMAKE_CXX_FLAGS="-fdiagnostics-color -march=native -O3 -g -Wextra -Wall -Wshadow"'
+
+## designed to use with ctrl+space for expansion while typing
+# alias 'cmake-find-package-exist'='cmake --find-package  -DCOMPILER_ID=GNU -DLANGUAGE=C -DMODE=EXIST -DNAME='
+# alias 'cmake-find-package-compile'='cmake --find-package  -DCOMPILER_ID=GNU -DLANGUAGE=C -DMODE=EXIST -DNAME='
+# alias 'cmake-find-package-link'='cmake --find-package  -DCOMPILER_ID=GNU -DLANGUAGE=C -DMODE=EXIST -DNAME='
+
