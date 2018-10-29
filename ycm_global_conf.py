@@ -39,6 +39,7 @@ flags = [
     '-std=c++17',
     '-x',
     'c++',
+    '-DYCM_DIAGS=1',
 ]
 
 try:
