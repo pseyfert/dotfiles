@@ -20,3 +20,5 @@
   pushInsteadOf = https://github.com/
 [http]
 	emptyAuth = true
+[core]
+	excludesfile = ~/.gitignore
