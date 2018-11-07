@@ -38,7 +38,7 @@
 	path = vim/bundle/overleaf-commenter
 	url = https://github.com/pseyfert/overleaf-commenter
 [submodule "vim/after/syntax/vim-gaudi-cmake-syntax"]
-	path = vim/after/syntax/vim-gaudi-cmake-syntax
+	path = vim/bundle/vim-gaudi-cmake-syntax
 	url = https://github.com/pseyfert/vim-gaudi-cmake-syntax.git
 [submodule "vim/bundle/vim-cmake-help"]
 	path = vim/bundle/vim-cmake-help
