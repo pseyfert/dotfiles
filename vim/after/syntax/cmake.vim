@@ -1,0 +1,1 @@
+vim-gaudi-cmake-syntax/cmake.vim
