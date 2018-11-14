@@ -22,7 +22,7 @@ if (( ! ${+TOPSHLVL} )) ; then
   export TOPSHLVL=${SHLVL}
 fi
 
-PROMPT="%(?..%? )%(!.ROOT.%n)@%m %~ "
+PROMPT="%(?..%? )%(!.ROOT.%n)@%m:%~ "
 for (( indent = ${TOPSHLVL} ; indent <= ${SHLVL} ; ++indent )); do PROMPT="${PROMPT}>"; done
 PROMPT="${PROMPT} "
 
