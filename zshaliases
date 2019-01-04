@@ -2,6 +2,7 @@ alias "less"="less -R"
 #GREP_OPTIONS="--color=always --exclude='*.pyc' --exclude-dir=.git --exclude-dir=.svn -InH"
 alias -g "GO"="--color=always --exclude='*.pyc' --exclude-dir=.git --exclude-dir=.svn -InH"
 alias -g "grep"="grep GO"
+alias -g "rg"="rg --vimgrep --color=always"
 alias 'svn-meld'='svn diff --diff-cmd="meld"'
 alias -g "NE"="2>/dev/null"
 
@@ -38,3 +39,5 @@ alias -g 'cmake-gen'='cmake -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_R
 # alias 'cmake-find-package-compile'='cmake --find-package  -DCOMPILER_ID=GNU -DLANGUAGE=C -DMODE=EXIST -DNAME='
 # alias 'cmake-find-package-link'='cmake --find-package  -DCOMPILER_ID=GNU -DLANGUAGE=C -DMODE=EXIST -DNAME='
 
+alias gdb-bt="gdb -q -n -ex bt -batch"
+alias coredump-bt="coredumpctl -q --debugger=/home/pseyfert/.local/bin/gdb-bt debug"
