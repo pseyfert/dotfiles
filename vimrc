@@ -8,6 +8,7 @@ set hlsearch
 set scrolloff=5
 " enable filetype plugins
 filetype plugin on
+set background=light
 
 """ COMMANDS
 "
@@ -15,6 +16,9 @@ filetype plugin on
 " key
 map Q :qa<cr>
 map X :xa!<cr>
+map <C-n> :tabnext<cr>
+map <C-p> :tabprevious<cr>
+map <C-t> :tabnew<cr>
 
 """ INDENTATION
 "
@@ -87,7 +91,9 @@ endif
 " indentation (done by vim-go upon write, but for muslce memory)
 autocmd FileType go set noexpandtab copyindent preserveindent softtabstop=0 shiftwidth=4 tabstop=4
 autocmd FileType go noremap <C-I> :GoFmt<cr>
-autocmd FileType go noremap <C-B> :w<cr>:GoBuild<cr>
+autocmd FileType go noremap <C-B>i :w<cr>:GoImports<cr>
+autocmd FileType go noremap <C-B>b :w<cr>:GoBuild<cr>
+autocmd FileType go noremap <C-B>r :w<cr>:GoRun<cr>
 
 "" C/C++/JS/... formatting
 "
@@ -177,3 +183,12 @@ au BufRead,BufNewFile *.bbx setfiletype tex
 
 let g:licenses_authors_name = 'Paul Seyfert <pseyfert@cern.ch>'
 let g:licenses_copyright_holders_name = 'CERN for the benefit of the LHCb collaboration'
+
+" for debugging syntax highlighting functions
+" function! SyntaxItem()
+"   return synIDattr(synID(line("."),col("."),1),"name")
+" endfunction
+"
+" map <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
+" \ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
+" \ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
