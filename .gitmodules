@@ -43,3 +43,6 @@
 [submodule "vim/bundle/vim-cmake-help"]
 	path = vim/bundle/vim-cmake-help
 	url = https://github.com/pseyfert/vim-cmake-help.git
+[submodule "vim/bundle/vim-asm"]
+	path = vim/bundle/vim-asm
+	url = https://github.com/pseyfert/vim-asm.git

@@ -156,13 +156,15 @@ function! ToggleCopyPasteMode()
     set signcolumn=no
     set paste
     let g:flake8_show_in_file=0
+    set conceallevel=3
   else
     set signcolumn=auto
     set nopaste
     let g:flake8_show_in_file=1
+    set conceallevel=0
   endif
 endfunction
-
+set conceallevel=0
 
 "" LATEX
 
