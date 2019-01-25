@@ -150,19 +150,26 @@ endif
 
 " toggle the column with the >> signs
 nnoremap <F5> :call ToggleCopyPasteMode()<cr>
-set signcolumn=auto
+if g:os == "Scientific\n" || g:os == "CentOS\n"
+  " tough luck
+else
+  set signcolumn=auto
+endif
 function! ToggleCopyPasteMode()
-  if &signcolumn == "auto"
-    set signcolumn=no
-    set paste
+  if &paste == 0
+    if !(g:os == "Scientific\n" || g:os == "CentOS\n")
+      set signcolumn=no
+    endif
     let g:flake8_show_in_file=0
     set conceallevel=3
   else
-    set signcolumn=auto
-    set nopaste
+    if !(g:os == "Scientific\n" || g:os == "CentOS\n")
+      set signcolumn=auto
+    endif
     let g:flake8_show_in_file=1
     set conceallevel=0
   endif
+  set paste!
 endfunction
 set conceallevel=0
 
