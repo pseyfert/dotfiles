@@ -1,3 +1,3 @@
 #!/bin/sh
 
-exec gdb -q -n -ex 'thread apply all bt' -batch "$@"
+exec gdb -q -n -ex 'thread apply all bt full' -batch "$@"
