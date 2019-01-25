@@ -19,6 +19,7 @@ map X :xa!<cr>
 map <C-n> :tabnext<cr>
 map <C-p> :tabprevious<cr>
 map <C-t> :tabnew<cr>
+map <C-f> <c-w>gF
 
 """ INDENTATION
 "
@@ -141,6 +142,7 @@ let g:ycm_filetype_blacklist = {'notes': 1, 'markdown': 1, 'netrw': 1, 'unite': 
 let g:ycm_confirm_extra_conf = 0
 let g:ycm_autoclose_preview_window_after_insertion = 1
 let g:ycm_autoclose_preview_window_after_completion = 1
+let g:ycm_goto_buffer_command = 'split'
 if g:os == "Scientific\n" || g:os == "CentOS\n"
   " TODO: move away from site-dependent location
   let g:ycm_global_ycm_extra_conf = "/afs/cern.ch/user/p/pseyfert/.vim/.ycm_extra_conf.py"
