@@ -89,6 +89,9 @@ endif
 "" Go
 "
 " indentation (done by vim-go upon write, but for muslce memory)
+if g:os == "Scientific\n" || g:os == "CentOS\n"
+  let g:go_version_warning = 0
+endif
 autocmd FileType go set noexpandtab copyindent preserveindent softtabstop=0 shiftwidth=4 tabstop=4
 autocmd FileType go noremap <C-I> :GoFmt<cr>
 autocmd FileType go noremap <C-B>i :w<cr>:GoImports<cr>
@@ -138,7 +141,7 @@ let g:ycm_filetype_blacklist = {'notes': 1, 'markdown': 1, 'netrw': 1, 'unite': 
 let g:ycm_confirm_extra_conf = 0
 let g:ycm_autoclose_preview_window_after_insertion = 1
 let g:ycm_autoclose_preview_window_after_completion = 1
-if g:os == "Scientific\n"
+if g:os == "Scientific\n" || g:os == "CentOS\n"
   " TODO: move away from site-dependent location
   let g:ycm_global_ycm_extra_conf = "/afs/cern.ch/user/p/pseyfert/.vim/.ycm_extra_conf.py"
 elseif g:os == "Arch\n"
@@ -172,6 +175,34 @@ function! ToggleCopyPasteMode()
   set paste!
 endfunction
 set conceallevel=0
+
+if &diff
+  let g:my_ycm = "not_in_diff"
+else
+  let g:ycm_filetype_whitelist = { 'cpp': 1 }
+  let g:ycm_filetype_blacklist = {
+        \ 'tagbar' : 1,
+        \ 'qf' : 1,
+        \ 'notes' : 1,
+        \ 'markdown' : 1,
+        \ 'unite' : 1,
+        \ 'text' : 1,
+        \ 'vimwiki' : 1,
+        \ 'pandoc' : 1,
+        \ 'infolog' : 1,
+        \ 'mail' : 1,
+        \ 'python' : 1
+        \}
+  if g:os=="Scientific\n"
+    set rtp+=/afs/cern.ch/user/p/pseyfert/.vim/os_dependent_bundle/YouCompleteMe.slc6
+    let g:my_ycm = "slc6"
+  elseif g:os=="CentOS\n"
+    set rtp+=/afs/cern.ch/user/p/pseyfert/.vim/os_dependent_bundle/YouCompleteMe
+    let g:my_ycm = "cc7"
+  else
+    let g:my_ycm = "unknownOS"
+  endif
+endif
 
 "" LATEX
 
