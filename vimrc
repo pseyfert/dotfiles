@@ -106,18 +106,18 @@ autocmd FileType go noremap <C-B>r :w<cr>:GoRun<cr>
 " http://vim.wikia.com/wiki/Forcing_Syntax_Coloring_for_files_with_odd_extensions
 au BufRead,BufNewFile *.icpp setfiletype cpp
 
-" run clang-format on ^K for a marked section (^I for the entire file, try to
-" jump back to where started with ``)
+" ^I: run clang-format for a marked section or entire file if nothing marked
+" (try to jump back to where started with ``)
 if g:os == "Scientific\n"
-  let $PATH="/cvmfs/lhcb.cern.ch/lib/lcg/external/llvm/3.9/x86_64-slc6/bin:" . $PATH
-  let $LD_LIBRARY_PATH="/cvmfs/lhcb.cern.ch/lib/lcg/releases/gcc/4.9.3/x86_64-slc6/lib64:/cvmfs/lhcb.cern.ch/lib/lcg/external/llvm/3.9/x86_64-slc6/lib/:" . $LD_LIBRARY_PATH
-  autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino vmap <C-I> :pyf /cvmfs/lhcb.cern.ch/lib/lcg/external/llvm/3.7/x86_64-slc6/share/clang/clang-format.py<cr>
-  autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino nmap <C-I> ggV``G:pyf /cvmfs/lhcb.cern.ch/lib/lcg/external/llvm/3.7/x86_64-slc6/share/clang/clang-format.py<cr>``
+  let $PATH="/cvmfs/lhcb.cern.ch/lib/lcg/releases/clang/7.0.0/x86_64-slc6-gcc62-opt/bin:/cvmfs/lhcb.cern.ch/lib/lcg/releases/gcc/8.1.0/x86_64-slc6/bin:/cvmfs/lhcb.cern.ch/lib/lcg/releases/binutils/2.30/x86_64-slc6/bin:" . $PATH
+  let $LD_LIBRARY_PATH="/cvmfs/lhcb.cern.ch/lib/lcg/releases/clang/7.0.0/x86_64-slc6-gcc62-opt/lib64:/cvmfs/lhcb.cern.ch/lib/lcg/releases/gcc/8.1.0/x86_64-slc6/lib64:/cvmfs/lhcb.cern.ch/lib/lcg/releases/binutils/2.30/x86_64-slc6/lib:" . $LD_LIBRARY_PATH
+  autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino vmap <C-I> :pyf /cvmfs/lhcb.cern.ch/lib/lcg/releases/clang/7.0.0/x86_64-slc6-gcc62-opt/share/clang/clang-format.py<cr>
+  autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino nmap <C-I> ggV``G:pyf /cvmfs/lhcb.cern.ch/lib/lcg/releases/clang/7.0.0/x86_64-slc6-gcc62-opt/share/clang/clang-format.py<cr>``
 elseif g:os == "CentOS\n"
-  let $PATH="/cvmfs/lhcb.cern.ch/lib/lcg/external/llvm/3.9/x86_64-centos7/bin/:/afs/cern.ch/sw/lcg/external/llvm/3.9/x86_64-centos7/bin:" . $PATH
-  let $LD_LIBRARY_PATH="/cvmfs/lhcb.cern.ch/lib/lcg/releases/gcc/4.9.3/x86_64-centos7/lib64/:/afs/cern.ch/sw/lcg/external/gcc/4.9.3/x86_64-centos7/lib64:/cvmfs/lhcb.cern.ch/lib/lcg/external/llvm/3.9/x86_64-centos7/lib/lib:/afs/cern.ch/sw/lcg/external/llvm/3.9/x86_64-centos7/lib:" . $LD_LIBRARY_PATH
-  autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino vmap <C-I> :pyf /cvmfs/lhcb.cern.ch/lib/lcg/external/llvm/3.9/x86_64-centos7/share/clang/clang-format.py<cr>
-  autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino nmap <C-I> ggV``G:pyf /cvmfs/lhcb.cern.ch/lib/lcg/external/llvm/3.9/x86_64-centos7/share/clang/clang-format.py<cr>``
+  let $PATH="/cvmfs/lhcb.cern.ch/lib/lcg/releases/clang/7.0.0/x86_64-centos7-gcc62-opt/bin:/cvmfs/lhcb.cern.ch/lib/lcg/releases/gcc/8.1.0/x86_64-centos7/bin:/cvmfs/lhcb.cern.ch/lib/lcg/releases/binutils/2.30/x86_64-centos7/bin:" . $PATH
+  let $LD_LIBRARY_PATH="/cvmfs/lhcb.cern.ch/lib/lcg/releases/clang/7.0.0/x86_64-centos7-gcc62-opt/lib64:/cvmfs/lhcb.cern.ch/lib/lcg/releases/gcc/8.1.0/x86_64-centos7/lib64:/cvmfs/lhcb.cern.ch/lib/lcg/releases/binutils/2.30/x86_64-centos7/lib:" . $LD_LIBRARY_PATH
+  autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino vmap <C-I> :pyf /cvmfs/lhcb.cern.ch/lib/lcg/releases/clang/7.0.0/x86_64-centos7-gcc62-opt/share/clang/clang-format.py<cr>
+  autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino nmap <C-I> ggV``G:pyf /cvmfs/lhcb.cern.ch/lib/lcg/releases/clang/7.0.0/x86_64-centos7-gcc62-opt/share/clang/clang-format.py<cr>``
 elseif g:os == "Arch\n"
   if has('python3')
     autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino vmap <C-I> :py3f /usr/share/clang/clang-format.py<cr>
