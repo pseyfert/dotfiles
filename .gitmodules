@@ -46,3 +46,6 @@
 [submodule "vim/bundle/vim-asm"]
 	path = vim/bundle/vim-asm
 	url = https://github.com/pseyfert/vim-asm.git
+[submodule "vim/bundle/DoxygenToolkit.vim"]
+	path = vim/bundle/DoxygenToolkit.vim
+	url = https://github.com/vim-scripts/DoxygenToolkit.vim.git
