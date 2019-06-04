@@ -95,3 +95,6 @@ bindkey -M isearch " " magic-space
 # http://stackoverflow.com/questions/815686/
 
 bindkey '^[[Z' reverse-menu-complete
+
+export CLICOLOR_FORCE=1
+export CMAKE_GENERATOR="Ninja"

@@ -49,3 +49,6 @@
 [submodule "vim/bundle/DoxygenToolkit.vim"]
 	path = vim/bundle/DoxygenToolkit.vim
 	url = https://github.com/vim-scripts/DoxygenToolkit.vim.git
+[submodule "vim/bundle/i3config"]
+	path = vim/bundle/i3config
+	url = https://github.com/mboughaba/i3config.vim.git
