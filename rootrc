@@ -5,5 +5,4 @@ RooFit.Banner: no
 Canvas.ShowEventStatus:     true
 Canvas.ShowToolTips:        true
 Canvas.ShowToolBar:         true
-
-
+Root.Stacktrace:         no
