@@ -114,10 +114,10 @@ if g:os == "Scientific\n"
   autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino vmap <C-I> :pyf /cvmfs/lhcb.cern.ch/lib/lcg/releases/clang/7.0.0/x86_64-slc6-gcc62-opt/share/clang/clang-format.py<cr>
   autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino nmap <C-I> ggV``G:pyf /cvmfs/lhcb.cern.ch/lib/lcg/releases/clang/7.0.0/x86_64-slc6-gcc62-opt/share/clang/clang-format.py<cr>``
 elseif g:os == "CentOS\n"
-  let $PATH="/cvmfs/lhcb.cern.ch/lib/lcg/releases/clang/7.0.0/x86_64-centos7-gcc62-opt/bin:/cvmfs/lhcb.cern.ch/lib/lcg/releases/gcc/8.1.0/x86_64-centos7/bin:/cvmfs/lhcb.cern.ch/lib/lcg/releases/binutils/2.30/x86_64-centos7/bin:" . $PATH
-  let $LD_LIBRARY_PATH="/cvmfs/lhcb.cern.ch/lib/lcg/releases/clang/7.0.0/x86_64-centos7-gcc62-opt/lib64:/cvmfs/lhcb.cern.ch/lib/lcg/releases/gcc/8.1.0/x86_64-centos7/lib64:/cvmfs/lhcb.cern.ch/lib/lcg/releases/binutils/2.30/x86_64-centos7/lib:" . $LD_LIBRARY_PATH
-  autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino vmap <C-I> :pyf /cvmfs/lhcb.cern.ch/lib/lcg/releases/clang/7.0.0/x86_64-centos7-gcc62-opt/share/clang/clang-format.py<cr>
-  autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino nmap <C-I> ggV``G:pyf /cvmfs/lhcb.cern.ch/lib/lcg/releases/clang/7.0.0/x86_64-centos7-gcc62-opt/share/clang/clang-format.py<cr>``
+  let $PATH="/cvmfs/lhcb.cern.ch/lib/lcg/releases/clang/8.0.0/x86_64-centos7-gcc8-opt/bin:/cvmfs/lhcb.cern.ch/lib/lcg/releases/gcc/8.2.0/x86_64-centos7/bin:/cvmfs/lhcb.cern.ch/lib/lcg/releases/binutils/2.30/x86_64-centos7/bin:" . $PATH
+  let $LD_LIBRARY_PATH="/cvmfs/lhcb.cern.ch/lib/lcg/releases/clang/8.0.0/x86_64-centos7-gcc8-opt/lib64:/cvmfs/lhcb.cern.ch/lib/lcg/releases/gcc/8.2.0/x86_64-centos7/lib64:/cvmfs/lhcb.cern.ch/lib/lcg/releases/binutils/2.30/x86_64-centos7/lib:" . $LD_LIBRARY_PATH
+  autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino vmap <C-I> :pyf /cvmfs/lhcb.cern.ch/lib/lcg/releases/clang/8.0.0/x86_64-centos7-gcc8-opt/share/clang/clang-format.py<cr>
+  autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino nmap <C-I> ggV``G:pyf /cvmfs/lhcb.cern.ch/lib/lcg/releases/clang/8.0.0/x86_64-centos7-gcc8-opt/share/clang/clang-format.py<cr>``
 elseif g:os == "Arch\n"
   if has('python3')
     autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino vmap <C-I> :py3f /usr/share/clang/clang-format.py<cr>
