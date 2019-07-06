@@ -1,0 +1,25 @@
+cd() {
+  # cd [ -qsLP ] [ arg ]
+  # cd [ -qsLP ] old new
+  # cd [ -qsLP ] {+|-}n
+  #
+  # The second behaviour can be tricky, thus I detect if the second to last
+  # word starts with - and make sure that `cd` itself isn't the second to
+  # last word.
+
+  if [[ $# -gt 1 ]]; then
+    if [[ $@[-2] != -* ]]; then
+      builtin cd $@
+      return $?
+    fi
+  fi
+
+  # otherwise, check if the last word is an existing path and not a directory
+  # this may happen when I use !!$ (the last word of the previous command
+  # that's a file) or copy and paste a filename and want to go to the
+  # directory of that file.
+  if [[ -e $@[-1] && ! -d $@[-1] ]]; then dir=$(dirname $@[-1]); else dir=$@[-1] ; fi
+  builtin cd $@[1,-2] $dir
+  return $?
+}
+
