@@ -61,3 +61,30 @@
 [submodule "vim/bundle/vim-lsp"]
 	path = vim/bundle/vim-lsp
 	url = https://github.com/prabirshrestha/vim-lsp
+[submodule "submodules/zsh-boost-test-completion"]
+	path = submodules/zsh-boost-test-completion
+	url = https://github.com/pseyfert/zsh-boost-test-completion.git
+[submodule "submodules/zsh-fs-completion"]
+	path = submodules/zsh-fs-completion
+	url = https://github.com/pseyfert/zsh-fs-completion.git
+[submodule "submodules/zsh-completions"]
+	path = submodules/zsh-completions
+	url = https://github.com/zsh-users/zsh-completions.git
+[submodule "submodules/zsh-completions-1"]
+	path = submodules/zsh-completions-1
+	url = https://github.com/zchee/zsh-completions.git
+[submodule "submodules/advixe-cl-completion"]
+	path = submodules/advixe-cl-completion
+	url = https://github.com/pseyfert/advixe-cl-completion
+[submodule "submodules/zsh-google-benchmark-completion"]
+	path = submodules/zsh-google-benchmark-completion
+	url = https://github.com/pseyfert/zsh-google-benchmark-completion
+[submodule "submodules/zsh-clangd-indexer-completion"]
+	path = submodules/zsh-clangd-indexer-completion
+	url = https://github.com/pseyfert/zsh-clangd-indexer-completion.git
+[submodule "submodules/zsh-ctest-completion"]
+	path = submodules/zsh-ctest-completion
+	url = https://github.com/pseyfert/zsh-ctest-completion.git
+[submodule "submodules/zsh-gtest-completion"]
+	path = submodules/zsh-gtest-completion
+	url = https://github.com/pseyfert/zsh-gtest-completion.git
