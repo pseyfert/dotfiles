@@ -74,18 +74,28 @@ vnoremap t :Linediff<CR>
 "  - nasty: g:os comes with trailing linefeed
 let g:os=system('echo ${$(lsb_release -d)[2]}')
 
-"" PYTHON INDENTATION
+"" Python
 "
 " indendation
 autocmd FileType python setlocal tabstop=4 shiftwidth=4 softtabstop=4 expandtab
 " TODO: needs fixing on lxplus
 if g:os != "Scientific\n" || g:os != "CentOS\n"
   autocmd FileType python noremap <C-I> :call Autopep8()<cr>
-  " code checking upon write
+  " code checking
   autocmd BufWritePost *.py call Flake8()
+  autocmd FileType python noremap <C-B>b :call Flake8()<cr>
   let g:flake8_show_in_file=1
 endif
 
+"" Shell
+autocmd FileType sh noremap <C-B>b :ShellCheck!<cr>
+if executable('bash-language-server')
+  au User lsp_setup call lsp#register_server({
+        \ 'name': 'bash-language-server',
+        \ 'cmd': {server_info->[&shell, &shellcmdflag, 'bash-language-server start']},
+        \ 'whitelist': ['sh', 'zsh'],
+        \ })
+endif
 
 "" Go
 "
@@ -234,3 +244,5 @@ let g:licenses_copyright_holders_name = 'CERN for the benefit of the LHCb collab
 " map <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
 " \ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
 " \ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
+let g:lsp_signs_enabled = 1         " enable signs
+let g:lsp_diagnostics_echo_cursor = 1 " enable echo under cursor when in normal mode
