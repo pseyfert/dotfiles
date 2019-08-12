@@ -1,0 +1,98 @@
+#compdef xdg-settings
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for the xdg-settings command
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Paul Seyfert <pseyfert.mathphys@gmail.com>
+#
+# ------------------------------------------------------------------------------
+# License
+# -------
+#
+# zsh license
+#
+# Permission is hereby granted, without written agreement and without
+# licence or royalty fees, to use, copy, modify, and distribute this
+# software and to distribute modified versions of this software for any
+# purpose, provided that the above copyright notice and the following
+# two paragraphs appear in all copies of this software.
+# 
+# In no event shall the author be liable to any party for
+# direct, indirect, special, incidental, or consequential damages arising out
+# of the use of this software and its documentation, even if the author
+# has been advised of the possibility of such damage.
+# 
+# The author specifically disclaims any warranties, including,
+# but not limited to, the implied warranties of merchantability and fitness
+# for a particular purpose.  The software provided hereunder is on an "as is"
+# basis, and the author has no obligation to provide
+# maintenance, support, updates, enhancements, or modifications.
+#
+# ------------------------------------------------------------------------------
+
+
+# TODO fails on subproperties
+
+_xdg_format_entry() {
+  echo $1 | sed 's/ *\([^ ]*\) *\([^ ].*\)/\1[\2]/'
+}
+
+_xdg_settings_cmd() {
+  _values 'command' 'get[get value of a property]' 'set[set value of a property]' 'check[check if property has a certain value]'
+}
+
+_xdg_properties() {
+  local -a full_properties
+  props=(${(f)"$(xdg-settings --list)"})
+  props=(${props[2,-1]})
+  for prop in $props; do
+    full_properties+=`_xdg_format_entry $prop`
+  done
+  _values 'properties' $full_properties
+}
+
+_xdg_subproperties_or_application() {
+  [[ $words[3] == "default-url-scheme-handler" ]] && _values -w 'subproperties' 'mailto' 'http' 'https' 'ftp' 'ssh' 'telnet' && return 0
+  _xdg_settings_applications
+}
+
+
+_xdg_settings_applications() {
+  [[ $words[3] != "default-url-scheme-handler" && $CURRENT -eq 5 ]] && return 0
+  [[ $words[2] == get ]] && return 0
+  local -a applications
+
+  for file in /usr/share/applications/*.desktop; do
+    applications+=`_xdg_settings_format_desktop_entry $file`
+  done
+
+  _values -w \
+          'applications' \
+          $applications
+}
+
+_xdg_settings_format_desktop_entry() {
+  echo "`basename $1`[`_xdg_settings_app_description $1`]"
+}
+
+_xdg_settings_app_description() {
+  # grep --no-messages option is handling of not UTF-8 text
+  grep --no-messages '^Comment=\|^Exec=' $1 | \
+    tr '\n' ' '
+}
+
+_arguments \
+  '(*)--help[Show command synopsis.]' \
+  '(*)--list[List all properties xdg-settings knows about.]' \
+  '(*)--manual[Show manual page.]' \
+  '(*)--version[Show the xdg-utils version information.]' \
+  '1:cmd:_xdg_settings_cmd' \
+  '2:property:_xdg_properties' \
+  '3:subproperty/value:_xdg_subproperties_or_application' \
+  '4:value:_xdg_settings_applications'
