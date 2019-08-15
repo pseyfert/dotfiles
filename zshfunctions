@@ -14,11 +14,14 @@ cd() {
     fi
   fi
 
-  # otherwise, check if the last word is an existing path and not a directory
-  # this may happen when I use !!$ (the last word of the previous command
-  # that's a file) or copy and paste a filename and want to go to the
-  # directory of that file.
-  if [[ -e $@[-1] && ! -d $@[-1] ]]; then dir=$(dirname $@[-1]); else dir=$@[-1] ; fi
+  # Otherwise, check if the last word is an existing directory, if so go there.
+  # If it is not an existing directory (as may happen when I use !!$ (the last
+  # word of the previous command that's a file) or copy and paste a filename and
+  # want to go to the directory of that file, then going into the containing
+  # directory is desired.  If the last word just doesn't exist (neither an
+  # existing file, nor an existing directory), try if the supposedly containing
+  # directory exists and is a directory.
+  if [[ ! -d $@[-1] && -d $(dirname $@[1]) ]];then dir=$(dirname $@[-1]); else dir=$@[-1] ; fi
   builtin cd $@[1,-2] $dir
   return $?
 }
