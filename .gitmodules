@@ -88,3 +88,6 @@
 [submodule "submodules/zsh-gtest-completion"]
 	path = submodules/zsh-gtest-completion
 	url = https://github.com/pseyfert/zsh-gtest-completion.git
+[submodule "vim/bundle/ycm_conf"]
+	path = vim/bundle/ycm_conf
+	url = https://github.com/pseyfert/ycm_conf_experiment.git
