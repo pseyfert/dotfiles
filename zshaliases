@@ -1,4 +1,6 @@
 alias "less"="less -R"
+alias "vimr"="vim -R"
+alias "vimless"="vim -R -"
 #GREP_OPTIONS="--color=always --exclude='*.pyc' --exclude-dir=.git --exclude-dir=.svn -InH"
 alias -g "GO"="--color=always --exclude='*.pyc' --exclude-dir=.git --exclude-dir=.svn -InH"
 alias -g "grep"="grep GO"
