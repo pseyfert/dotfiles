@@ -130,11 +130,19 @@ elseif g:os == "CentOS\n"
   autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino nmap <C-I> ggV``G:pyf /cvmfs/lhcb.cern.ch/lib/lcg/releases/clang/8.0.0/x86_64-centos7/share/clang/clang-format.py<cr>``
 elseif g:os == "Arch\n"
   if has('python3')
-    autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino vmap <C-I> :py3f /usr/share/clang/clang-format.py<cr>
-    autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino nmap <C-I> ggV``G:py3f /usr/share/clang/clang-format.py<cr>``
+    autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino vmap <C-I> :py3f /home/pseyfert/.local/bin/clang-format.py<cr>
+    function FormatFile()
+      let l:lines="all"
+      py3f /home/pseyfert/.local/bin/clang-format.py
+    endfunction
+    autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino nmap <C-I> :call FormatFile()<cr>
   elseif has('python')
-    autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino vmap <C-I> :pyf /usr/share/clang/clang-format.py<cr>
-    autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino nmap <C-I> ggV``G:pyf /usr/share/clang/clang-format.py<cr>``
+    autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino vmap <C-I> :pyf /home/pseyfert/.local/bin/clang-format.py<cr>
+    function FormatFile()
+      let l:lines="all"
+      pyf /home/pseyfert/.local/bin/clang-format.py
+    endfunction
+    autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino nmap <C-I> :call FormatFile()<cr>
   endif
 elseif g:os == "Debian\n"
   " Tears go here.
