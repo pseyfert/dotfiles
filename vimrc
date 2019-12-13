@@ -109,6 +109,13 @@ autocmd FileType go noremap <C-B>i :w<cr>:GoImports<cr>
 autocmd FileType go noremap <C-B>b :w<cr>:GoBuild<cr>
 autocmd FileType go noremap <C-B>r :w<cr>:GoRun<cr>
 
+"" Rust
+"
+autocmd FileType rust noremap <C-I> :RustFmt<cr>
+autocmd FileType rust compiler rustc
+autocmd FileType rust noremap <C-B>b :call MakeAndShow()<cr>
+autocmd FileType rust noremap <C-B>r :RustRun<cr>
+
 "" C/C++/JS/... formatting
 "
 " manual filetype overriding before other things (allow ft switches)
@@ -170,6 +177,12 @@ elseif g:os == "Arch\n"
   "let g:ycm_server_python_interpreter='/usr/bin/python2'
 elseif g:os == "Debian\n"
 endif
+function! MakeAndShow()
+  silent make
+  redraw!
+  cwindow
+endfunction
+nmap <C-B>r :call MakeAndShow()<cr>
 
 " toggle the column with the >> signs
 nnoremap <F5> :call ToggleCopyPasteMode()<cr>
