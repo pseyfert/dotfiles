@@ -119,7 +119,7 @@ autocmd FileType go noremap <C-B>r :w<cr>:GoRun<cr>
 "
 autocmd FileType rust noremap <C-I> :RustFmt<cr>
 autocmd FileType rust compiler rustc
-autocmd FileType rust noremap <C-B>b :call MakeAndShow()<cr>
+autocmd FileType rust noremap <C-B>b :w<cr>:call MakeAndShow()<cr>
 autocmd FileType rust noremap <C-B>r :RustRun<cr>
 
 "" C/C++/JS/... formatting
