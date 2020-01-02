@@ -66,6 +66,12 @@ endif
 " http://www.vim.org/scripts/script.php?script_id=3745
 vnoremap t :Linediff<CR>
 
+""" cursors
+" use different cursor for normal, insert, replace modes
+let &t_SI = "\<Esc>[6 q"
+let &t_SR = "\<Esc>[4 q"
+let &t_EI = "\<Esc>[2 q"
+
 """ LANGUAGE SPECIFICS
 " TODO:
 "  - do this depending on filetype (e.g. not for latex, vimrc, python)
