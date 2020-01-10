@@ -1,17 +1,25 @@
 cd() {
-  # cd [ -qsLP ] [ arg ]
-  # cd [ -qsLP ] old new
-  # cd [ -qsLP ] {+|-}n
+  # cd [ -qsLP ] [ arg ]     (1)
+  # cd [ -qsLP ] old new     (2)
+  # cd [ -qsLP ] {+|-}n      (3)
   #
   # The second behaviour can be tricky, thus I detect if the second to last
   # word starts with - and make sure that `cd` itself isn't the second to
   # last word.
 
   if [[ $# -gt 1 ]]; then
+    # distinguish (2) from the others with options
     if [[ $@[-2] != -* ]]; then
       builtin cd $@
       return $?
     fi
+  fi
+
+  # special treatment for (1) without options and without arguments
+  # FIXME: catch edge case of no argument with option
+  if [[ $# -eq 0 ]]; then
+    builtin cd
+    return $?
   fi
 
   # Otherwise, check if the last word is an existing directory, if so go there.
@@ -20,8 +28,13 @@ cd() {
   # want to go to the directory of that file, then going into the containing
   # directory is desired.  If the last word just doesn't exist (neither an
   # existing file, nor an existing directory), try if the supposedly containing
-  # directory exists and is a directory.
-  if [[ ! -d $@[-1] && -d $(dirname $@[1]) ]];then dir=$(dirname $@[-1]); else dir=$@[-1] ; fi
+  # directory exists and is a directory. But check if the last word starts with
+  # + or - to catch case (3).
+  if [[ ! -d $@[-1] && -d $(dirname $@[-1]) && $@[-1] != -* && $@[-1] != +* ]];then
+    dir=$(dirname $@[-1])
+  else
+    dir=$@[-1]
+  fi
   builtin cd $@[1,-2] $dir
   return $?
 }
