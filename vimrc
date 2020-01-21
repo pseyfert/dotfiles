@@ -10,6 +10,12 @@ set scrolloff=5
 filetype plugin on
 set background=light
 
+""" undo stuff
+set undofile
+set undodir=$HOME/.vim_undo
+set undolevels=1000
+set undoreload=10000
+
 """ COMMANDS
 "
 " when going through many files with git difftool, I want to close w/o leader
