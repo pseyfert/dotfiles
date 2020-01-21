@@ -11,11 +11,14 @@ shellex.letterSpace: -1
 ! fallback
 shellex*geometry: 170x1
 ! urxvt plugins
-URxvt.perl-ext-common: default,font-size,selection-to-clipboard
-URxvt.keysym.C-Up:     font-size:increase
-URxvt.keysym.C-Down:   font-size:decrease
-URxvt.keysym.C-equal:  font-size:reset
-URxvt.keysym.C-slash:  font-size:show
+URxvt.perl-ext-common:   default,font-size,selection-to-clipboard,autocomplete-ALL-the-things
+URxvt.keysym.C-slash:    perl:aAtt:word-complete
+URxvt.keysym.C-period:   perl:aAtt:surround-complete
+URxvt.keysym.C-comma:    perl:aAtt:WORD-complete
+URxvt.keysym.C-Up:       font-size:increase
+URxvt.keysym.C-Down:     font-size:decrease
+URxvt.keysym.C-equal:    font-size:reset
+! URxvt.keysym.C-slash:      font-size:show
 ! urxvt history
 URxvt*saveLines: 12000
 ! urxvt size setup (for non-tiling window managers, optimised for X220)
