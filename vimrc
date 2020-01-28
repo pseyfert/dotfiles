@@ -146,7 +146,11 @@ elseif g:os == "CentOS\n"
   let $PATH="/cvmfs/lhcb.cern.ch/lib/lcg/releases/clang/8.0.0/x86_64-centos7/bin:/cvmfs/lhcb.cern.ch/lib/lcg/releases/gcc/8.2.0/x86_64-centos7/bin:/cvmfs/lhcb.cern.ch/lib/lcg/releases/binutils/2.30/x86_64-centos7/bin" . $PATH
   let $LD_LIBRARY_PATH="/cvmfs/lhcb.cern.ch/lib/lcg/releases/clang/8.0.0/x86_64-centos7/lib:/cvmfs/lhcb.cern.ch/lib/lcg/releases/gcc/8.2.0/x86_64-centos7/lib:/cvmfs/lhcb.cern.ch/lib/lcg/releases/gcc/8.2.0/x86_64-centos7/lib64:/cvmfs/lhcb.cern.ch/lib/lcg/releases/binutils/2.30/x86_64-centos7/lib" . $LD_LIBRARY_PATH
   autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino vmap <C-I> :pyf /cvmfs/lhcb.cern.ch/lib/lcg/releases/clang/8.0.0/x86_64-centos7/share/clang/clang-format.py<cr>
-  autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino nmap <C-I> ggV``G:pyf /cvmfs/lhcb.cern.ch/lib/lcg/releases/clang/8.0.0/x86_64-centos7/share/clang/clang-format.py<cr>``
+  function FormatFile()
+    let l:lines="all"
+    pyf /cvmfs/lhcb.cern.ch/lib/lcg/releases/clang/8.0.0/x86_64-centos7/share/clang/clang-format.py
+  endfunction
+  autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino nmap <C-I> :call FormatFile()<cr>
 elseif g:os == "Arch\n"
   if has('python3')
     autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino vmap <C-I> :py3f /home/pseyfert/.local/bin/clang-format.py<cr>
