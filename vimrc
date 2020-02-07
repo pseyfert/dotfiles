@@ -181,18 +181,21 @@ endif
 
 let g:ycm_filetype_blacklist = {'notes': 1, 'markdown': 1, 'netrw': 1, 'unite': 1, 'pandoc': 1, 'tagbar': 1, 'qf': 1, 'vimwiki': 1, 'text': 1, 'infolog': 1, 'mail': 1, 'go': 1}
 let g:ycm_confirm_extra_conf = 0
-let g:ycm_autoclose_preview_window_after_insertion = 1
-let g:ycm_autoclose_preview_window_after_completion = 1
+let g:ycm_autoclose_preview_window_after_insertion = 0
+let g:ycm_autoclose_preview_window_after_completion = 0
 let g:ycm_goto_buffer_command = 'split'
 if g:os == "Scientific\n" || g:os == "CentOS\n"
   " TODO: move away from site-dependent location
   let g:ycm_global_ycm_extra_conf = "/afs/cern.ch/user/p/pseyfert/.vim/.ycm_extra_conf.py"
 elseif g:os == "Arch\n"
   " ycm here seems to be built for python2
-  let g:ycm_global_ycm_extra_conf = "/home/pseyfert/.ycm_global_conf.py"
+  " let g:ycm_global_ycm_extra_conf = "/home/pseyfert/.ycm_global_conf.py"
+  let g:ycm_global_ycm_extra_conf = "/home/pseyfert/coding/dotfiles/vim/bundle/ycm_conf/ycm_global_conf.py"
   "let g:ycm_server_python_interpreter='/usr/bin/python2'
 elseif g:os == "Debian\n"
 endif
+autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino nmap <C-B>b :YcmDiags<cr>
+
 function! MakeAndShow()
   silent make
   redraw!
@@ -281,5 +284,3 @@ let g:licenses_copyright_holders_name = 'CERN for the benefit of the LHCb collab
 " map <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
 " \ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
 " \ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
-let g:lsp_signs_enabled = 1         " enable signs
-let g:lsp_diagnostics_echo_cursor = 1 " enable echo under cursor when in normal mode
