@@ -99,6 +99,9 @@ if g:os != "Scientific\n" || g:os != "CentOS\n"
   let g:flake8_show_in_file=1
 endif
 
+"" CSV
+let g:disable_rainbow_key_mappings=1
+
 "" Shell
 autocmd FileType sh noremap <C-B>b :ShellCheck!<cr>
 if executable('bash-language-server')
