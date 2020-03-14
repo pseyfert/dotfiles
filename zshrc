@@ -99,5 +99,5 @@ bindkey '^[[Z' reverse-menu-complete
 export CLICOLOR_FORCE=1
 export CMAKE_GENERATOR="Ninja"
 
-# when completing filenames, suggest directories as fallback, do not suggest "just any file"
-zstyle ':completion:*' file-patterns '%p:globbed-files' '*(-/):directories'
+# when completing filenames, always also suggest directories, do not suggest "just any file"
+zstyle ':completion:*' file-patterns '%p:globbed-files *(-/):directories'
