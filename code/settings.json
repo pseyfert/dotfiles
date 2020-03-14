@@ -1,0 +1,20 @@
+{
+    "git.ignoreLegacyWarning": true,
+    "C_Cpp.clang_format_path": "/cvmfs/lhcb.cern.ch/lib/bin/x86_64-centos7/lcg-clang-format-8.0.0",
+    "[cpp]": {
+        "editor.defaultFormatter": "ms-vscode.cpptools",
+    },
+    "vim.cursorStylePerMode.insert": "line",
+    "vim.cursorStylePerMode.normal": "block",
+    "vim.ignorecase": false,
+    "vim.incsearch": false,
+    "workbench.colorTheme": "Visual Studio Light",
+    "editor.fontFamily": "'PragmataPro', 'Droid Sans Mono', 'monospace', monospace, 'Droid Sans Fallback'",
+    "editor.fontSize": 12,
+    "terminal.integrated.fontFamily": "PragmataPro",
+    "terminal.integrated.fontSize": 12,
+    "editor.autoClosingBrackets": "never",
+    "editor.autoClosingQuotes": "never",
+    "editor.autoClosingOvertype": "never",
+    "editor.tabSize": 2,
+}
