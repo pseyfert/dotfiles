@@ -101,3 +101,14 @@ export CMAKE_GENERATOR="Ninja"
 
 # when completing filenames, always also suggest directories, do not suggest "just any file"
 zstyle ':completion:*' file-patterns '%p:globbed-files *(-/):directories'
+
+# print a huge number of blank lines when clearing terminal
+# (i.e. insert a visible separation in what you see when scrolling back)
+flush() {
+  timeout 0.03s yes
+  zle clear-screen
+}
+
+zle -N flush
+
+bindkey "^L" flush
