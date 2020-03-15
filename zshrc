@@ -106,6 +106,14 @@ fpath=(~/.local/share/zsh/completions $fpath)
 autoload -Uz compinit
 compinit
 
+expand-or-complete-with-dots() {
+    echo -n -e "\e[37m...\e[0m\033[3D"
+    zle expand-or-complete
+    zle redisplay
+}
+zle -N expand-or-complete-with-dots
+bindkey '\t' expand-or-complete-with-dots
+
 # print a huge number of blank lines when clearing terminal
 # (i.e. insert a visible separation in what you see when scrolling back)
 flush() {
