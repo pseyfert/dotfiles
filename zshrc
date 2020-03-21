@@ -98,6 +98,7 @@ bindkey '^[[Z' reverse-menu-complete
 
 export CLICOLOR_FORCE=1
 export CMAKE_GENERATOR="Ninja"
+export CMAKE_EXPORT_COMPILE_COMMANDS=ON
 
 # when completing filenames, always also suggest directories, do not suggest "just any file"
 zstyle ':completion:*' file-patterns '%p:globbed-files *(-/):directories'
