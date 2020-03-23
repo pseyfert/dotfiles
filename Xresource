@@ -6,7 +6,7 @@ yeahconsole*foreground:white
 shellex*scrollBar: false
 shellex.pos: focus
 ! shellex.edge: bottom
-shellex.font: xft:Inconsolata:style=Regular:pixelsize=15:antialias=true:hinting=full
+shellex.font: xft:PragmataProMono:style=Regular:size=10:antialising=true:hinting=true:autohint=true:hint=full:rgba=rgb
 shellex.letterSpace: -1
 ! fallback
 shellex*geometry: 170x1
