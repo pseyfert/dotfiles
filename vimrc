@@ -112,6 +112,9 @@ if executable('bash-language-server')
         \ })
 endif
 
+"" Json
+autocmd FileType json noremap <C-I> :%!json_reformat<cr>
+
 "" Go
 "
 " indentation (done by vim-go upon write, but for muslce memory)
