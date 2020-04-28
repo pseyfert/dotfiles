@@ -103,14 +103,12 @@ export CMAKE_EXPORT_COMPILE_COMMANDS=ON
 # when completing filenames, always also suggest directories, do not suggest "just any file"
 zstyle ':completion:*' file-patterns '%p:globbed-files *(-/):directories'
 
-# enable options stacking for docker (such that `docker run -it <TAB>` completes correctly)
-# as documented in the _docker source code
-zstyle ':completion:*:*:docker:*' option-stacking yes
-zstyle ':completion:*:*:docker-*:*' option-stacking yes
-
 fpath=(~/.local/share/zsh/completions $fpath)
 autoload -Uz compinit
 compinit
+
+# command specific completion settings
+source $HOME/.zsh/zshcomps
 
 expand-or-complete-with-dots() {
     echo -n -e "\e[37m...\e[0m\033[3D"
