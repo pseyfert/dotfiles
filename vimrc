@@ -279,8 +279,8 @@ au BufRead,BufNewFile *.bbx setfiletype tex
 
 " * doxygen something
 
-let g:licenses_authors_name = 'Paul Seyfert <pseyfert@cern.ch>'
-let g:licenses_copyright_holders_name = 'CERN for the benefit of the LHCb collaboration'
+let g:licenses_authors_name = 'Paul Seyfert <pseyfert.mathphys@gmail.com>'
+" let g:licenses_copyright_holders_name = 'CERN for the benefit of the LHCb collaboration'
 
 map <F6> :doautocmd BufRead<cr>
 function! RunFtDetect(...)
