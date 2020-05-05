@@ -100,3 +100,6 @@
 [submodule "vim/bundle/unicodeit"]
 	path = vim/bundle/unicodeit
 	url = https://github.com/pseyfert/vim-unicodeit.git
+[submodule "vim/bundle/AnsiEsc.vim"]
+	path = vim/bundle/AnsiEsc.vim
+	url = https://github.com/pseyfert/AnsiEsc.vim.git

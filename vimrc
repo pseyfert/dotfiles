@@ -203,7 +203,7 @@ endif
 autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino nmap <C-B>b :YcmDiags<cr>
 
 function! MakeAndShow()
-  silent make
+  silent make!
   redraw!
   cwindow
 endfunction
@@ -281,6 +281,19 @@ au BufRead,BufNewFile *.bbx setfiletype tex
 
 let g:licenses_authors_name = 'Paul Seyfert <pseyfert@cern.ch>'
 let g:licenses_copyright_holders_name = 'CERN for the benefit of the LHCb collaboration'
+
+map <F6> :doautocmd BufRead<cr>
+function! RunFtDetect(...)
+  let fname = get(a:, 0, 0)
+  if fname
+    echo "detecting filetype based on filename " . a:1
+    exec 'doautocmd BufRead ' . a:1
+  else
+    echo "detecting filetype based on buffer content"
+    exec 'doautocmd BufRead'
+  endif
+endfunction
+com! -nargs=? FtDetect :call RunFtDetect(<args>)
 
 " for debugging syntax highlighting functions
 " function! SyntaxItem()
