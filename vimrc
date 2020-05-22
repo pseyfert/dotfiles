@@ -89,6 +89,7 @@ let g:os=system('echo ${$(lsb_release -d)[2]}')
 "" Python
 "
 " indendation
+let g:pydocstring_enable_mapping=0
 autocmd FileType python setlocal tabstop=4 shiftwidth=4 softtabstop=4 expandtab
 " TODO: needs fixing on lxplus
 if g:os != "Scientific\n" || g:os != "CentOS\n"
