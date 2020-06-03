@@ -13,9 +13,6 @@
 [submodule "vim/bundle/tcomment_vim"]
 	path = vim/bundle/tcomment_vim
 	url = https://github.com/tomtom/tcomment_vim.git
-[submodule "vim/bundle/lhcbvim_org"]
-	path = vim/bundle/lhcbvim_org
-	url = https://:@gitlab.cern.ch:8443/pseyfert/lhcbvim.git
 [submodule "vim/bundle/vim-flake8"]
 	path = vim/bundle/vim-flake8
 	url = https://github.com/nvie/vim-flake8
