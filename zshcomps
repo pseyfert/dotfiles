@@ -3,6 +3,9 @@
 zstyle ':completion:*:*:docker:*' option-stacking yes
 zstyle ':completion:*:*:docker-*:*' option-stacking yes
 
+# do not complete directories further once a *.vtune file is found
+zstyle ':completion:*:vtune-gui:*' file-patterns '*.vtune:globbed-files:profiles' '*(-/):directories:directories'
+
 compdef _gnu_generic root-config
 compdef _gnu_generic llvm-config
 compdef _gnu_generic ncdu
