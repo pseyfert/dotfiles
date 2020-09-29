@@ -100,3 +100,6 @@
 [submodule "vim/bundle/AnsiEsc.vim"]
 	path = vim/bundle/AnsiEsc.vim
 	url = https://github.com/pseyfert/AnsiEsc.vim.git
+[submodule "submodules/FlameGraph"]
+	path = submodules/FlameGraph
+	url = https://github.com/brendangregg/FlameGraph.git
