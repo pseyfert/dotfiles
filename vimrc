@@ -296,7 +296,7 @@ function! RunFtDetect(...)
 endfunction
 com! -nargs=? FtDetect :call RunFtDetect(<args>)
 
-" for debugging syntax highlighting functions
+"" for debugging syntax highlighting functions
 " function! SyntaxItem()
 "   return synIDattr(synID(line("."),col("."),1),"name")
 " endfunction
@@ -304,6 +304,35 @@ com! -nargs=? FtDetect :call RunFtDetect(<args>)
 " map <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
 " \ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
 " \ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
+"" end-syntax debugging
+
+
+"" experimenting with lsp and tabnine
+" let g:ycm_filetype_blacklist = {'cpp': 1}
+" let g:ycm_filetype_whitelist = { }
+" if executable('clangd')
+"   augroup lsp_clangd
+"     autocmd!
+"     autocmd User lsp_setup call lsp#register_server({
+"           \ 'name': 'clangd',
+"           \ 'cmd': {server_info->['clangd']},
+"           \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp'],
+"           \ })
+"     autocmd FileType c setlocal omnifunc=lsp#complete
+"     autocmd FileType cpp setlocal omnifunc=lsp#complete
+"     autocmd FileType objc setlocal omnifunc=lsp#complete
+"     autocmd FileType objcpp setlocal omnifunc=lsp#complete
+"   augroup end
+"   autocmd FileType c,cpp noremap <C-B>b :LspDocumentDiagnostics<cr>
+" endif
+" let g:lsp_signs_enabled = 1         " enable signs
+" let g:lsp_diagnostics_echo_cursor = 1 " enable echo under cursor when in normal mode
+" " let g:lsp_log_verbose = 1
+" " let g:lsp_log_file = '/tmp/vim-lsp.log'
+
+" set rtp+=/home/pseyfert/.vim/ondemand/tabnine-vim
+"
+"" end-experimenting with lsp and tabnine
 
 let &errorformat="%*[^\"]\"%f\"%*\\D%l: %m,
       \\"%f\"%*\\D%l: %m,
