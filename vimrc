@@ -78,6 +78,7 @@ let &t_SI = "\<Esc>[6 q"
 let &t_SR = "\<Esc>[4 q"
 let &t_EI = "\<Esc>[2 q"
 
+noremap <C-B>l :ALELint<cr>
 """ LANGUAGE SPECIFICS
 " TODO:
 "  - do this depending on filetype (e.g. not for latex, vimrc, python)
@@ -88,17 +89,18 @@ let g:os=system('echo ${$(lsb_release -d)[2]}')
 
 "" Python
 "
-" indendation
+" pydocstring config
 let g:pydocstring_enable_mapping=0
+" indendation / formatting
 autocmd FileType python setlocal tabstop=4 shiftwidth=4 softtabstop=4 expandtab
-" TODO: needs fixing on lxplus
-if g:os != "Scientific\n" || g:os != "CentOS\n"
-  autocmd FileType python noremap <C-I> :call Autopep8()<cr>
-  " code checking
-  autocmd BufWritePost *.py call Flake8()
-  autocmd FileType python noremap <C-B>b :call Flake8()<cr>
-  let g:flake8_show_in_file=1
-endif
+autocmd FileType python noremap <C-I> :call Autopep8()<cr>
+" want something like
+"   yapf --style pep8 -i <fname>
+"   pylint --rcfile=/usr/share/sevensense_linter/pylint.rc -rn --score=n --disable=R -f colorized <fname>
+" code checking
+autocmd BufWritePost *.py call Flake8()
+autocmd FileType python noremap <C-B>b :call Flake8()<cr>
+let g:flake8_show_in_file=1
 
 "" CSV
 let g:disable_rainbow_key_mappings=1
@@ -184,6 +186,9 @@ elseif g:os == "Debian\n"
   "  - detect host (local patch)
   autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino vmap <C-I> :py3f /usr/share/clang/clang-format-4.0/clang-format.py<cr>
   autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino nmap <C-I> ggV``G:py3f /usr/share/clang/clang-format-4.0/clang-format.py<cr>``
+elseif g:os == "Ubuntu\n"
+  autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino vmap <C-I> :py3f /usr/share/vim/addons/syntax/clang-format-10.py<cr>
+  autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino nmap <C-I> ggV``G:py3f /usr/share/vim/addons/syntax/clang-format-10.py<cr>``
 endif
 
 let g:ycm_filetype_blacklist = {'notes': 1, 'markdown': 1, 'netrw': 1, 'unite': 1, 'pandoc': 1, 'tagbar': 1, 'qf': 1, 'vimwiki': 1, 'text': 1, 'infolog': 1, 'mail': 1}
@@ -203,11 +208,21 @@ elseif g:os == "Debian\n"
 endif
 autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino nmap <C-B>b :YcmDiags<cr>
 
+let g:ale_linters_explicit = 1
+let g:ale_linters = { 'cpp': ['clangtidy'], 'python': ['pylint', 'mypy']}
+let g:ale_cpp_clangtidy_executable = 'clang-tidy-10'
+let g:ale_cpp_clangtidy_checks = ['clang-diagnostic-*,clang-analyzer-*,performance*,bugprone*,clang*,cppcore*,google*,hicpp*,modernize*,readability*,-google-explicit-constructor,-hicpp-explicit-conversions,-google-readability-todo,-*-uppercase-literal-suffix,-modernize-use-trailing-return-type']
+let g:ale_cpp_clangtidy_extra_options = '-p=/home/pseyfert/navigator_ws/build/navigation_common'
+let g:ale_python_pylint_options = '--rcfile=/usr/share/sevensense_linter/pylint.rc --disable=R'
+let g:ale_python_mypy_options = '--ignore-missing-imports --py2'
+
 function! MakeAndShow()
+  :w
   silent make!
   redraw!
   cwindow
 endfunction
+
 nmap <C-B>r :call MakeAndShow()<cr>
 
 " toggle the column with the >> signs
@@ -258,6 +273,9 @@ else
   elseif g:os=="CentOS\n"
     set rtp+=/afs/cern.ch/user/p/pseyfert/.vim/os_dependent_bundle/YouCompleteMe
     let g:my_ycm = "cc7"
+  elseif g:os=="Ubuntu\n"
+    " set rtp+=/usr/share/vim-youcompleteme
+    let g:my_ycm = "ubuntu"
   else
     let g:my_ycm = "unknownOS"
   endif
