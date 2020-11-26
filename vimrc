@@ -105,13 +105,13 @@ let g:disable_rainbow_key_mappings=1
 
 "" Shell
 autocmd FileType sh noremap <C-B>b :ShellCheck!<cr>
-if executable('bash-language-server')
-  au User lsp_setup call lsp#register_server({
-        \ 'name': 'bash-language-server',
-        \ 'cmd': {server_info->[&shell, &shellcmdflag, 'bash-language-server start']},
-        \ 'whitelist': ['sh', 'zsh'],
-        \ })
-endif
+" if executable('bash-language-server')
+"   au User lsp_setup call lsp#register_server({
+"         \ 'name': 'bash-language-server',
+"         \ 'cmd': {server_info->[&shell, &shellcmdflag, 'bash-language-server start']},
+"         \ 'whitelist': ['sh', 'zsh'],
+"         \ })
+" endif
 
 "" Json
 autocmd FileType json noremap <C-I> :%!json_reformat<cr>
