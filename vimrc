@@ -78,6 +78,7 @@ let &t_SI = "\<Esc>[6 q"
 let &t_SR = "\<Esc>[4 q"
 let &t_EI = "\<Esc>[2 q"
 
+noremap <C-B>l :ALELint<cr>
 """ LANGUAGE SPECIFICS
 " TODO:
 "  - do this depending on filetype (e.g. not for latex, vimrc, python)
@@ -203,11 +204,21 @@ elseif g:os == "Debian\n"
 endif
 autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino nmap <C-B>b :YcmDiags<cr>
 
+let g:ale_linters_explicit = 1
+let g:ale_linters = { 'cpp': ['clangtidy'], 'python': ['pylint', 'mypy']}
+let g:ale_cpp_clangtidy_executable = 'clang-tidy-10'
+let g:ale_cpp_clangtidy_checks = ['clang-diagnostic-*,clang-analyzer-*,performance*,bugprone*,clang*,cppcore*,google*,hicpp*,modernize*,readability*,-google-explicit-constructor,-hicpp-explicit-conversions,-google-readability-todo,-*-uppercase-literal-suffix,-modernize-use-trailing-return-type']
+let g:ale_cpp_clangtidy_extra_options = '-p=/home/pseyfert/navigator_ws/build/navigation_common'
+let g:ale_python_pylint_options = '--rcfile=/usr/share/sevensense_linter/pylint.rc --disable=R'
+let g:ale_python_mypy_options = '--ignore-missing-imports --py2'
+
 function! MakeAndShow()
+  :w
   silent make!
   redraw!
   cwindow
 endfunction
+
 nmap <C-B>r :call MakeAndShow()<cr>
 
 " toggle the column with the >> signs
