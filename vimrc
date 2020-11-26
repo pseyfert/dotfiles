@@ -186,6 +186,9 @@ elseif g:os == "Debian\n"
   "  - detect host (local patch)
   autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino vmap <C-I> :py3f /usr/share/clang/clang-format-4.0/clang-format.py<cr>
   autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino nmap <C-I> ggV``G:py3f /usr/share/clang/clang-format-4.0/clang-format.py<cr>``
+elseif g:os == "Ubuntu\n"
+  autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino vmap <C-I> :py3f /usr/share/vim/addons/syntax/clang-format-10.py<cr>
+  autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino nmap <C-I> ggV``G:py3f /usr/share/vim/addons/syntax/clang-format-10.py<cr>``
 endif
 
 let g:ycm_filetype_blacklist = {'notes': 1, 'markdown': 1, 'netrw': 1, 'unite': 1, 'pandoc': 1, 'tagbar': 1, 'qf': 1, 'vimwiki': 1, 'text': 1, 'infolog': 1, 'mail': 1, 'go': 1}
@@ -270,6 +273,9 @@ else
   elseif g:os=="CentOS\n"
     set rtp+=/afs/cern.ch/user/p/pseyfert/.vim/os_dependent_bundle/YouCompleteMe
     let g:my_ycm = "cc7"
+  elseif g:os=="Ubuntu\n"
+    " set rtp+=/usr/share/vim-youcompleteme
+    let g:my_ycm = "ubuntu"
   else
     let g:my_ycm = "unknownOS"
   endif
