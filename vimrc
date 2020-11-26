@@ -89,17 +89,18 @@ let g:os=system('echo ${$(lsb_release -d)[2]}')
 
 "" Python
 "
-" indendation
+" pydocstring config
 let g:pydocstring_enable_mapping=0
+" indendation / formatting
 autocmd FileType python setlocal tabstop=4 shiftwidth=4 softtabstop=4 expandtab
-" TODO: needs fixing on lxplus
-if g:os != "Scientific\n" || g:os != "CentOS\n"
-  autocmd FileType python noremap <C-I> :call Autopep8()<cr>
-  " code checking
-  autocmd BufWritePost *.py call Flake8()
-  autocmd FileType python noremap <C-B>b :call Flake8()<cr>
-  let g:flake8_show_in_file=1
-endif
+autocmd FileType python noremap <C-I> :call Autopep8()<cr>
+" want something like
+"   yapf --style pep8 -i <fname>
+"   pylint --rcfile=/usr/share/sevensense_linter/pylint.rc -rn --score=n --disable=R -f colorized <fname>
+" code checking
+autocmd BufWritePost *.py call Flake8()
+autocmd FileType python noremap <C-B>b :call Flake8()<cr>
+let g:flake8_show_in_file=1
 
 "" CSV
 let g:disable_rainbow_key_mappings=1
