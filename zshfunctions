@@ -10,7 +10,7 @@ cd() {
   if [[ $# -gt 1 ]]; then
     # distinguish (2) from the others with options
     if [[ $@[-2] != -* ]]; then
-      builtin cd $@
+      builtin cd "$@"
       return $?
     fi
   fi
