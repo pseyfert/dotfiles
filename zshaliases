@@ -45,3 +45,7 @@ alias -g 'cmake-gen'='cmake -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_R
 
 alias gdb-bt="gdb -q -n -ex bt -batch"
 alias coredump-bt="coredumpctl -q --debugger=/home/pseyfert/.local/bin/gdb-bt debug"
+if [[ $(lsb_release -si) = Debian ]]; then
+  alias fd=fdfind
+  alias bat=batcat
+fi
