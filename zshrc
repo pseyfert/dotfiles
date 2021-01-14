@@ -128,3 +128,12 @@ flush() {
 zle -N flush
 
 bindkey "^L" flush
+
+push-line-and-insert() {
+  zle push-line
+  zle vi-insert
+}
+
+zle -N push-line-and-insert
+bindkey -a "^Y" push-line-and-insert
+bindkey -v "^Y" push-line
