@@ -1,0 +1,149 @@
+import sys
+
+if sys.version_info.major == 2 and not (sys.version_info.minor == 7 and sys.version_info.micro == 17):
+    print("Minor python2 version upgrade happened. Please update {}".format(__file__))
+
+elif sys.version_info.major == 2 and sys.version_info.minor == 7 and sys.version_info.micro == 17:
+    # copy and paste + edit + delete unneeded code from /usr/lib/python2.7/traceback.py
+
+    import linecache
+    import types
+
+    def _print2(file, str='', terminator='\n'):
+        file.write(str+terminator)
+
+
+    def print_tb2(tb, limit=None, file=None):
+        """Print up to 'limit' stack trace entries from the traceback 'tb'.
+
+        If 'limit' is omitted or None, all entries are printed.  If 'file'
+        is omitted or None, the output goes to sys.stderr; otherwise
+        'file' should be an open file or file-like object with a write()
+        method.
+        """
+        if file is None:
+            file = sys.stderr
+        if limit is None:
+            if hasattr(sys, 'tracebacklimit'):
+                limit = sys.tracebacklimit
+        n = 0
+        while tb is not None and (limit is None or n < limit):
+            f = tb.tb_frame
+            lineno = tb.tb_lineno
+            co = f.f_code
+            filename = co.co_filename
+            name = co.co_name
+            _print2(file,
+                   '  File %s:%d, in %s' % (filename, lineno, name))
+            linecache.checkcache(filename)
+            line = linecache.getline(filename, lineno, f.f_globals)
+            if line: _print2(file, '    ' + line.strip())
+            tb = tb.tb_next
+            n = n+1
+
+    def print_exception2(etype, value, tb, limit=None, file=None):
+        """Print exception up to 'limit' stack trace entries from 'tb' to 'file'.
+
+        This differs from print_tb() in the following ways: (1) if
+        traceback is not None, it prints a header "Traceback (most recent
+        call last):"; (2) it prints the exception type and value after the
+        stack trace; (3) if type is SyntaxError and value has the
+        appropriate format, it prints the line where the syntax error
+        occurred with a caret on the next line indicating the approximate
+        position of the error.
+        """
+        if file is None:
+            file = sys.stderr
+        if tb:
+            _print2(file, 'Traceback (most recent call last):')
+            print_tb2(tb, limit, file)
+        lines = format_exception_only2(etype, value)
+        for line in lines:
+            _print2(file, line, '')
+
+    def format_exception_only2(etype, value):
+        """Format the exception part of a traceback.
+
+        The arguments are the exception type and value such as given by
+        sys.last_type and sys.last_value. The return value is a list of
+        strings, each ending in a newline.
+
+        Normally, the list contains a single string; however, for
+        SyntaxError exceptions, it contains several lines that (when
+        printed) display detailed information about where the syntax
+        error occurred.
+
+        The message indicating which exception occurred is always the last
+        string in the list.
+
+        """
+
+        # An instance should not have a meaningful value parameter, but
+        # sometimes does, particularly for string exceptions, such as
+        # >>> raise string1, string2  # deprecated
+        #
+        # Clear these out first because issubtype(string1, SyntaxError)
+        # would raise another exception and mask the original problem.
+        if (isinstance(etype, BaseException) or
+            isinstance(etype, types.InstanceType) or
+            etype is None or type(etype) is str):
+            return [_format_final_exc_line2(etype, value)]
+
+        stype = etype.__name__
+
+        if not issubclass(etype, SyntaxError):
+            return [_format_final_exc_line2(stype, value)]
+
+        # It was a syntax error; show exactly where the problem was found.
+        lines = []
+        try:
+            msg, (filename, lineno, offset, badline) = value.args
+        except Exception:
+            pass
+        else:
+            filename = filename or "<string>"
+            lines.append('  File %s:%d\n' % (filename, lineno))
+            if badline is not None:
+                lines.append('    %s\n' % badline.strip())
+                if offset is not None:
+                    caretspace = badline.rstrip('\n')
+                    offset = min(len(caretspace), offset) - 1
+                    caretspace = caretspace[:offset].lstrip()
+                    # non-space whitespace (likes tabs) must be kept for alignment
+                    caretspace = ((c.isspace() and c or ' ') for c in caretspace)
+                    lines.append('    %s^\n' % ''.join(caretspace))
+            value = msg
+
+        lines.append(_format_final_exc_line2(stype, value))
+        return lines
+
+    def _format_final_exc_line2(etype, value):
+        """Return a list of a single line -- normal case for format_exception_only"""
+        valuestr = _some_str2(value)
+        if value is None or not valuestr:
+            line = "%s\n" % etype
+        else:
+            line = "%s: %s\n" % (etype, valuestr)
+        return line
+
+    def _some_str2(value):
+        try:
+            return str(value)
+        except Exception:
+            pass
+        try:
+            value = unicode(value)
+            return value.encode("ascii", "backslashreplace")
+        except Exception:
+            pass
+        return '<unprintable %s object>' % type(value).__name__
+
+    sys.excepthook = print_exception2
+
+elif sys.version_info.major == 3 and not (sys.version_info.minor == 6 and sys.version_info.micro == 9):
+    print("Minor python3 version upgrade happened. Please update {}".format(__file__))
+
+elif sys.version_info.major == 3 and sys.version_info.minor == 6 and sys.version_info.micro == 9:
+    import imp
+    open_file, file_name, description = imp.find_module('.python3rc')
+    foo_bar = imp.load_module('.python3rc', open_file, file_name, description)
