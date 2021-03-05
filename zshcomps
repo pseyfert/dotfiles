@@ -5,9 +5,13 @@ zstyle ':completion:*:*:docker-*:*' option-stacking yes
 
 # do not complete directories further once a *.vtune file is found
 zstyle ':completion:*:vtune-gui:*' file-patterns '*.vtune:globbed-files:profiles' '*(-/):directories:directories'
+zstyle ':completion:*:flamegraph.sh:*' file-patterns '*.vtune:globbed-files:profiles' '*(-/):directories:directories'
 
 compdef _gnu_generic root-config
 compdef _gnu_generic llvm-config
 compdef _gnu_generic ncdu
 compdef _gnu_generic wc
 compdef _gnu_generic lsb_release
+
+zstyle ':completion:*:messages' format $'%{\e[0;31m%}%d%{\e[0m%}'
+zstyle ':completion:*:descriptions' format $'%{\e[0;33m%}%d:%{\e[0m%}'
