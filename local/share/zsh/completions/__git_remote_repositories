@@ -1,11 +1,29 @@
 #autoload
 
-if compset -P "git@gitlab.com:${GITLABNAME}" ; then
-  local groups
-  groups=(${${(f)"$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get https://gitlab.com/api/v4/groups/$GITLABGROUPID/descendant_groups 2>/dev/null | jq -r '.[] | "\(.full_path):\(.description)"')"}#${GITLABNAME}})
+if compset -P "git@gitlab.com:${GITLABNAME}/" ; then
+  local request response grouproot
+  grouproot=$IPREFIX
+  request="https://gitlab.com/api/v4/groups/$GITLABGROUPID/descendant_groups"
+  # When restricting the subgroup search, remove trailing slashes.
+  # In case the group's name is already complete, that would remove the group from the search results and prevent groupid lookup.
+  [[ -n $PREFIX ]] && request+=\?search=${PREFIX%/}
+  response=$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get $request 2>/dev/null)
   # curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get https://gitlab.com/api/v4/groups/${GITLABGROUPID}/descendant_groups 2>/dev/null > /tmp/desc_groups
-  # groups=(${${(f)"$(jq -r '.[] | "\(.full_path):\(.description)"' /tmp/desc_groups)"}#${GITLABNAME}})
-  _describe -t 'gitlab-groups' 'private gitlab groups to clone from' groups
+  # response=$(cat /tmp/desc_groups)
+  local -a groups
+  groups=(${${(f)"$(jq -r '.[] | "\(.full_path):\(.description)"' <<< $response)"}#${GITLABNAME}/})
+  _describe -t 'gitlab-groups' 'private gitlab groups to clone from' groups -qS '/'
+  if compset -P '*/' ; then
+    local potentialsubgroup potentialsubgroupid
+    potentialsubgroup=${IPREFIX#$grouproot}
+    potentialsubgroupid=$(jq ".[] | select(.full_path==\"$GITLABNAME/${potentialsubgroup%/}\")|.id" <<< $response)
+    if [[ -n $potentialsubgroupid ]] ; then
+      # _message "id is $potentialsubgroupid"
+      local -a projects
+      projects=(${(f)"$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get "https://gitlab.com/api/v4/groups/$potentialsubgroupid/projects" 2>/dev/null | jq -r '.[] | "\(.path):\(.description)"')"})
+      _describe -t gitlab-projects-in-$potentialsubgroup 'private gitlab repositories' projects -S '.git'
+    fi
+  fi
 else
   # "https\://\:@gitlab.cern.ch\:8443:cern gitlab with kerberos"
   local hosters; hosters=(
