@@ -1,0 +1,17 @@
+#autoload
+
+if compset -P "git@gitlab.com:${GITLABNAME}" ; then
+  local groups
+  groups=(${${(f)"$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get https://gitlab.com/api/v4/groups/$GITLABGROUPID/descendant_groups 2>/dev/null | jq -r '.[] | "\(.full_path):\(.description)"')"}#${GITLABNAME}})
+  # curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get https://gitlab.com/api/v4/groups/${GITLABGROUPID}/descendant_groups 2>/dev/null > /tmp/desc_groups
+  # groups=(${${(f)"$(jq -r '.[] | "\(.full_path):\(.description)"' /tmp/desc_groups)"}#${GITLABNAME}})
+  _describe -t 'gitlab-groups' 'private gitlab groups to clone from' groups
+else
+  # "https\://\:@gitlab.cern.ch\:8443:cern gitlab with kerberos"
+  local hosters; hosters=(
+  "https\://github.com:github read only"
+  "git@github.com\:pseyfert:github read/write from my account"
+  "git@gitlab.com\:$GITLABNAME"
+  )
+  _describe -t 'git-hosters' 'host to clone from' hosters -qS/
+fi
