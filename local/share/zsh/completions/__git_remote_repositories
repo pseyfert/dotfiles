@@ -60,7 +60,7 @@ __gitlab() {
     potentialsubgroupid=$(jq ".[] | select(.full_path==\"$GITLABNAME/${potentialsubgroup%/}\")|.id" <<< $groupsresponse)
     echo "checking for group $potentialsubgroupid" >> /tmp/gitlab.log
     if [[ -n $potentialsubgroupid ]] ; then
-      if ! _retrieve_cache projects_of_$potentialsubgroupid; then
+      if _cache_invalid projects_of_$potentialsubgroupid || ! _retrieve_cache projects_of_$potentialsubgroupid; then
         local -a projects
         projects=(${(f)"$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get "https://gitlab.com/api/v4/groups/$potentialsubgroupid/projects" 2>/dev/null | jq -r '.[] | "\(.path):\(.description)"')"})
         echo "sending request https://gitlab.com/api/v4/groups/$potentialsubgroupid/projects at $(date)" >> /tmp/gitlab.log
