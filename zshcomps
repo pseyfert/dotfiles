@@ -13,5 +13,9 @@ compdef _gnu_generic ncdu
 compdef _gnu_generic wc
 compdef _gnu_generic lsb_release
 
+# make sure messages get shown
 zstyle ':completion:*:messages' format $'%{\e[0;31m%}%d%{\e[0m%}'
+# make sure descriptions of completion lists get shown
 zstyle ':completion:*:descriptions' format $'%{\e[0;33m%}%d:%{\e[0m%}'
+# make sure completions get shown in groups
+zstyle ':completion:*' group-name ''
