@@ -24,7 +24,6 @@ __gitlab() {
   #     zstyle ':completion:*:descriptions' format $'%{\e[0;33m%}%d:%{\e[0m%}'   # show "headlines" for complections
   #  - paths (full_path/path) and descriptions are parsed from gitlab.
   #     TODO: Input sanatization might be needed (likely for descriptions if gitlab behaves nicely)
-  #     TODO: the completion assumes groups/projects without description to be synonymous. `jq` should drop the colon if nothing comes after it.
 
 
   local request grouproot
@@ -48,7 +47,7 @@ __gitlab() {
     # curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get https://gitlab.com/api/v4/groups/${GITLABGROUPID}/descendant_groups 2>/dev/null > /tmp/desc_groups
     # groupsresponse=$(cat /tmp/desc_groups)
     local -a groups
-    groups=(${${(f)"$(jq -r '.[] | "\(.full_path):\(.description)"' <<< $groupsresponse)"}#${GITLABNAME}/})
+    groups=(${${(f)"$(jq -r '.[] | ( select(.description!="") | "\(.full_path):\(.description)"),( select(.description=="") | "\(.full_path)")' <<< $groupsresponse)"}#${GITLABNAME}/})
     _store_cache gitlabgroups groups groupsresponse
   else
     echo "keeping cache" >> /tmp/gitlab.log
@@ -62,7 +61,7 @@ __gitlab() {
     if [[ -n $potentialsubgroupid ]] ; then
       if _cache_invalid projects_of_$potentialsubgroupid || ! _retrieve_cache projects_of_$potentialsubgroupid; then
         local -a projects
-        projects=(${(f)"$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get "https://gitlab.com/api/v4/groups/$potentialsubgroupid/projects" 2>/dev/null | jq -r '.[] | "\(.path):\(.description)"')"})
+        projects=(${(f)"$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get "https://gitlab.com/api/v4/groups/$potentialsubgroupid/projects" 2>/dev/null | jq -r '.[] | (select(.description!="")|"\(.path):\(.description)"),(select(.description=="")|"\(.path)")')"})
         echo "sending request https://gitlab.com/api/v4/groups/$potentialsubgroupid/projects at $(date)" >> /tmp/gitlab.log
         _store_cache projects_of_$potentialsubgroupid projects
       fi
