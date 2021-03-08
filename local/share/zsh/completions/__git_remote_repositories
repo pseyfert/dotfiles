@@ -1,29 +1,79 @@
 #autoload
 
-if compset -P "git@gitlab.com:${GITLABNAME}/" ; then
-  local request response grouproot
+__gitlab_cache_invalid() {
+  local -a oldp
+  oldp=( "$1"(Nmh+1) )
+  (( $#oldp ))
+}
+__gitlab() {
+  # behaviour, assumptions, mandatory customisation
+  #  - I assume the environment variables
+  #     GITLABNAME     name of your top level gitlab group
+  #     GITLABTOKEN    your personal API token
+  #     GITLABGROUPID  the group id of the aforementionned gitlab group
+  #    are set
+  #  - I assume your gitlab instance is gitlab.com and all your work is within one group and its subgroups
+  #     TODO: This could be updated moderately easily by going to associative arrays
+  #  - The cache is assumed valid for 1h and kept in $HOME/.gitlab-completion-cache
+  #     TODO: make modifyable (path and policy)
+  #     TODO: allow user to turn off
+  #  - Some logging (monitoring API calls) is done in /tmp/gitlab.log
+  #     TODO: make modifyable
+  #  - Ideally users have
+  #     zstyle ':completion:*' group-name ''                                     # separate groups and projects
+  #     zstyle ':completion:*:descriptions' format $'%{\e[0;33m%}%d:%{\e[0m%}'   # show "headlines" for complections
+  #  - paths (full_path/path) and descriptions are parsed from gitlab.
+  #     TODO: Input sanatization might be needed (likely for descriptions if gitlab behaves nicely)
+  #     TODO: the completion assumes groups/projects without description to be synonymous. `jq` should drop the colon if nothing comes after it.
+
+
+  local request grouproot
   grouproot=$IPREFIX
-  request="https://gitlab.com/api/v4/groups/$GITLABGROUPID/descendant_groups"
-  # When restricting the subgroup search, remove trailing slashes.
-  # In case the group's name is already complete, that would remove the group from the search results and prevent groupid lookup.
-  [[ -n $PREFIX ]] && request+=\?search=${PREFIX%/}
-  response=$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get $request 2>/dev/null)
-  # curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get https://gitlab.com/api/v4/groups/${GITLABGROUPID}/descendant_groups 2>/dev/null > /tmp/desc_groups
-  # response=$(cat /tmp/desc_groups)
-  local -a groups
-  groups=(${${(f)"$(jq -r '.[] | "\(.full_path):\(.description)"' <<< $response)"}#${GITLABNAME}/})
+
+  local cache_file_path
+  cache_file_path=$HOME/.gitlab-completion-cache
+  zstyle ":completion:${curcontext}:" use-cache on
+  zstyle ":completion:${curcontext}:" cache-path "$cache_file_path"
+  # zstyle -s ":completion:${curcontext}:" cache-policy cache_policy
+  zstyle ":completion:${curcontext}:" cache-policy __gitlab_cache_invalid
+
+  if _cache_invalid gitlabgroups || ! _retrieve_cache gitlabgroups; then
+    local groupsresponse 
+    request="https://gitlab.com/api/v4/groups/$GITLABGROUPID/descendant_groups"
+    # When restricting the subgroup search, remove trailing slashes.
+    # In case the group's name is already complete, that would remove the group from the search results and prevent groupid lookup.
+    [[ -n $PREFIX ]] && request+=\?search=${PREFIX%/}
+    groupsresponse=$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get $request 2>/dev/null)
+    echo "sending request $request at $(date)" >> /tmp/gitlab.log
+    # curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get https://gitlab.com/api/v4/groups/${GITLABGROUPID}/descendant_groups 2>/dev/null > /tmp/desc_groups
+    # groupsresponse=$(cat /tmp/desc_groups)
+    local -a groups
+    groups=(${${(f)"$(jq -r '.[] | "\(.full_path):\(.description)"' <<< $groupsresponse)"}#${GITLABNAME}/})
+    _store_cache gitlabgroups groups groupsresponse
+  else
+    echo "keeping cache" >> /tmp/gitlab.log
+  fi
   _describe -t 'gitlab-groups' 'private gitlab groups to clone from' groups -qS '/'
   if compset -P '*/' ; then
     local potentialsubgroup potentialsubgroupid
     potentialsubgroup=${IPREFIX#$grouproot}
-    potentialsubgroupid=$(jq ".[] | select(.full_path==\"$GITLABNAME/${potentialsubgroup%/}\")|.id" <<< $response)
+    potentialsubgroupid=$(jq ".[] | select(.full_path==\"$GITLABNAME/${potentialsubgroup%/}\")|.id" <<< $groupsresponse)
+    echo "checking for group $potentialsubgroupid" >> /tmp/gitlab.log
     if [[ -n $potentialsubgroupid ]] ; then
-      # _message "id is $potentialsubgroupid"
-      local -a projects
-      projects=(${(f)"$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get "https://gitlab.com/api/v4/groups/$potentialsubgroupid/projects" 2>/dev/null | jq -r '.[] | "\(.path):\(.description)"')"})
+      if ! _retrieve_cache projects_of_$potentialsubgroupid; then
+        local -a projects
+        projects=(${(f)"$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get "https://gitlab.com/api/v4/groups/$potentialsubgroupid/projects" 2>/dev/null | jq -r '.[] | "\(.path):\(.description)"')"})
+        echo "sending request https://gitlab.com/api/v4/groups/$potentialsubgroupid/projects at $(date)" >> /tmp/gitlab.log
+        _store_cache projects_of_$potentialsubgroupid projects
+      fi
       _describe -t gitlab-projects-in-$potentialsubgroup 'private gitlab repositories' projects -S '.git'
     fi
   fi
+}
+
+
+if compset -P "git@gitlab.com:${GITLABNAME}/" ; then
+  __gitlab
 else
   # "https\://\:@gitlab.cern.ch\:8443:cern gitlab with kerberos"
   local hosters; hosters=(
