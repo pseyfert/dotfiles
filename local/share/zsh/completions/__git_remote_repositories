@@ -12,6 +12,8 @@ __gitlab() {
   #     GITLABTOKEN    your personal API token
   #     GITLABGROUPID  the group id of the aforementionned gitlab group
   #    are set
+  #  - I assume you use zsh's git completion. This file should go into your $FPATH and will override
+  #     the (intentionally overridable) function __git_remote_repositories [here](https://github.com/zsh-users/zsh/blob/2644e3097dd26babf73ea8664f30341b262a2450/Completion/Unix/Command/_git#L7295).
   #  - I assume your gitlab instance is gitlab.com and all your work is within one group and its subgroups
   #     TODO: This could be updated moderately easily by going to associative arrays
   #  - The cache is assumed valid for 1h and kept in $HOME/.gitlab-completion-cache
