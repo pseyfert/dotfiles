@@ -20,6 +20,7 @@ __gitlab() {
   #     TODO: make modifyable (path and policy)
   #     TODO: allow user to turn off
   #  - Some logging (monitoring API calls) is done in /tmp/gitlab.log
+  #     This will cause problems on systems with multiple users all using this file
   #     TODO: make modifyable
   #  - Ideally users have
   #     zstyle ':completion:*' group-name ''                                     # separate groups and projects
