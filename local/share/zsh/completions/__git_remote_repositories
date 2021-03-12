@@ -5,6 +5,19 @@ __gitlab_cache_invalid() {
   oldp=( "$1"(Nmh+1) )
   (( $#oldp ))
 }
+
+__gitlab_projects() {
+  # $1 = group id
+  # $2 = group name
+  if _cache_invalid projects_of_$1 || ! _retrieve_cache projects_of_$1; then
+    local -a projects
+    projects=(${(f)"$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get "https://gitlab.com/api/v4/groups/$1/projects" 2>/dev/null | jq -r '.[] | (select(.description!="")|"\(.path):\(.description)"),(select(.description=="")|"\(.path)")')"})
+    echo "sending request https://gitlab.com/api/v4/groups/$1/projects at $(date)" >> /tmp/gitlab.log
+    _store_cache projects_of_$1 projects
+  fi
+  _describe -t gitlab-projects-in-$2 'private gitlab repositories' projects -S '.git'
+}
+
 __gitlab() {
   # behaviour, assumptions, mandatory customisation
   #  - I assume the environment variables
@@ -27,6 +40,7 @@ __gitlab() {
   #     zstyle ':completion:*:descriptions' format $'%{\e[0;33m%}%d:%{\e[0m%}'   # show "headlines" for complections
   #  - paths (full_path/path) and descriptions are parsed from gitlab.
   #     TODO: Input sanatization might be needed (likely for descriptions if gitlab behaves nicely)
+  #  - runtime dependency on `jq` and `curl`
 
 
   local request grouproot
@@ -62,14 +76,10 @@ __gitlab() {
     potentialsubgroupid=$(jq ".[] | select(.full_path==\"$GITLABNAME/${potentialsubgroup%/}\")|.id" <<< $groupsresponse)
     echo "checking for group $potentialsubgroupid" >> /tmp/gitlab.log
     if [[ -n $potentialsubgroupid ]] ; then
-      if _cache_invalid projects_of_$potentialsubgroupid || ! _retrieve_cache projects_of_$potentialsubgroupid; then
-        local -a projects
-        projects=(${(f)"$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get "https://gitlab.com/api/v4/groups/$potentialsubgroupid/projects" 2>/dev/null | jq -r '.[] | (select(.description!="")|"\(.path):\(.description)"),(select(.description=="")|"\(.path)")')"})
-        echo "sending request https://gitlab.com/api/v4/groups/$potentialsubgroupid/projects at $(date)" >> /tmp/gitlab.log
-        _store_cache projects_of_$potentialsubgroupid projects
-      fi
-      _describe -t gitlab-projects-in-$potentialsubgroup 'private gitlab repositories' projects -S '.git'
+      __gitlab_projects $potentialsubgroupid $potentialsubgroup
     fi
+  else
+    __gitlab_projects $GITLABGROUPID $GITLABNAME
   fi
 }
 
