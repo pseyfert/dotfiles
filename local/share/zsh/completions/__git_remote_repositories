@@ -42,6 +42,7 @@ __gitlab() {
   #  - Some logging (monitoring API calls) is done via `logger` if enabled
   #     Use `zstyle ':completion:*:git-clone:*" log-requests on` to enable logging
   #     This is not a standard style!
+  #     The logging does not include the GITLABTOKEN
   #  - Ideally users have
   #     zstyle ':completion:*' group-name ''                                     # separate groups and projects
   #     zstyle ':completion:*:descriptions' format $'%{\e[0;33m%}%d:%{\e[0m%}'   # show "headlines" for complections
