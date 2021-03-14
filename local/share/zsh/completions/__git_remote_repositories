@@ -11,9 +11,11 @@ __gitlab_projects() {
   # $2 = group name
   if _cache_invalid projects_of_$1 || ! _retrieve_cache projects_of_$1; then
     local -a projects
-    projects=(${(f)"$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get "https://gitlab.com/api/v4/groups/$1/projects" 2>/dev/null | jq -r '.[] | (select(.description!="")|"\(.path):\(.description)"),(select(.description=="")|"\(.path)")')"})
-    echo "sending request https://gitlab.com/api/v4/groups/$1/projects at $(date)" >> /tmp/gitlab.log
+    projects=(${(f)"$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get "https://${GITLABINSTANCE:-gitlab.com}/api/v4/groups/$1/projects" 2>/dev/null | jq -r '.[] | (select(.description!="")|"\(.path):\(.description)"),(select(.description=="")|"\(.path)")')"})
+    logger -i -t zsh-gitlab-tabcompletion -- "$USERNAME requests https://${GITLABINSTANCE:-gitlab.com}/api/v4/groups/$1/projects"
     _store_cache projects_of_$1 projects
+  else
+    logger -i -t zsh-gitlab-tabcompletion -- "using cache for project lookup of group $2 ($1)"
   fi
   _describe -t gitlab-projects-in-$2 'private gitlab repositories' projects -S '.git'
 }
@@ -21,26 +23,26 @@ __gitlab_projects() {
 __gitlab() {
   # behaviour, assumptions, mandatory customisation
   #  - I assume the environment variables
+  #     GITLABINSTANCE the gitlab instance you're working with (gitlab.com is the default)
   #     GITLABNAME     name of your top level gitlab group
   #     GITLABTOKEN    your personal API token
   #     GITLABGROUPID  the group id of the aforementionned gitlab group
   #    are set
   #  - I assume you use zsh's git completion. This file should go into your $FPATH and will override
   #     the (intentionally overridable) function __git_remote_repositories [here](https://github.com/zsh-users/zsh/blob/2644e3097dd26babf73ea8664f30341b262a2450/Completion/Unix/Command/_git#L7295).
-  #  - I assume your gitlab instance is gitlab.com and all your work is within one group and its subgroups
+  #  - I assume and all your work is within one group and its subgroups
   #     TODO: This could be updated moderately easily by going to associative arrays
   #  - The cache is assumed valid for 1h and kept in $HOME/.gitlab-completion-cache
   #     TODO: make modifyable (path and policy)
   #     TODO: allow user to turn off
-  #  - Some logging (monitoring API calls) is done in /tmp/gitlab.log
-  #     This will cause problems on systems with multiple users all using this file
+  #  - Some logging (monitoring API calls) is done via `logger`
   #     TODO: make modifyable
   #  - Ideally users have
   #     zstyle ':completion:*' group-name ''                                     # separate groups and projects
   #     zstyle ':completion:*:descriptions' format $'%{\e[0;33m%}%d:%{\e[0m%}'   # show "headlines" for complections
   #  - paths (full_path/path) and descriptions are parsed from gitlab.
   #     TODO: Input sanatization might be needed (likely for descriptions if gitlab behaves nicely)
-  #  - runtime dependency on `jq` and `curl`
+  #  - runtime dependency on `jq`, `curl`, and `logger`
 
 
   local request grouproot
@@ -55,26 +57,25 @@ __gitlab() {
 
   if _cache_invalid gitlabgroups || ! _retrieve_cache gitlabgroups; then
     local groupsresponse 
-    request="https://gitlab.com/api/v4/groups/$GITLABGROUPID/descendant_groups"
+    request="https://${GITLABINSTANCE:-gitlab.com}/api/v4/groups/$GITLABGROUPID/descendant_groups"
     # When restricting the subgroup search, remove trailing slashes.
     # In case the group's name is already complete, that would remove the group from the search results and prevent groupid lookup.
     [[ -n $PREFIX ]] && request+=\?search=${PREFIX%/}
     groupsresponse=$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get $request 2>/dev/null)
-    echo "sending request $request at $(date)" >> /tmp/gitlab.log
-    # curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get https://gitlab.com/api/v4/groups/${GITLABGROUPID}/descendant_groups 2>/dev/null > /tmp/desc_groups
+    logger -i -t zsh-gitlab-tabcompletion -- "$USERNAME requests $request"
+    # curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get https://${GITLABINSTANCE:-gitlab.com}/api/v4/groups/${GITLABGROUPID}/descendant_groups 2>/dev/null > /tmp/desc_groups
     # groupsresponse=$(cat /tmp/desc_groups)
     local -a groups
     groups=(${${(f)"$(jq -r '.[] | ( select(.description!="") | "\(.full_path):\(.description)"),( select(.description=="") | "\(.full_path)")' <<< $groupsresponse)"}#${GITLABNAME}/})
     _store_cache gitlabgroups groups groupsresponse
   else
-    echo "keeping cache" >> /tmp/gitlab.log
+    logger -i -t zsh-gitlab-tabcompletion -- "using cache for group lookup"
   fi
   _describe -t 'gitlab-groups' 'private gitlab groups to clone from' groups -qS '/'
   if compset -P '*/' ; then
     local potentialsubgroup potentialsubgroupid
     potentialsubgroup=${IPREFIX#$grouproot}
     potentialsubgroupid=$(jq ".[] | select(.full_path==\"$GITLABNAME/${potentialsubgroup%/}\")|.id" <<< $groupsresponse)
-    echo "checking for group $potentialsubgroupid" >> /tmp/gitlab.log
     if [[ -n $potentialsubgroupid ]] ; then
       __gitlab_projects $potentialsubgroupid $potentialsubgroup
     fi
@@ -84,14 +85,14 @@ __gitlab() {
 }
 
 
-if compset -P "git@gitlab.com:${GITLABNAME}/" ; then
+if compset -P "git@${GITLABINSTANCE:-gitlab.com}:${GITLABNAME}/" ; then
   __gitlab
 else
   # "https\://\:@gitlab.cern.ch\:8443:cern gitlab with kerberos"
   local hosters; hosters=(
   "https\://github.com:github read only"
   "git@github.com\:pseyfert:github read/write from my account"
-  "git@gitlab.com\:$GITLABNAME"
+  "git@${GITLABINSTANCE:-gitlab.com}\:$GITLABNAME"
   )
   _describe -t 'git-hosters' 'host to clone from' hosters -qS/
 fi
