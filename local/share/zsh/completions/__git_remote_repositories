@@ -1,5 +1,6 @@
 #autoload
 
+(( $+functions[__gitlab_cache_invalid] )) ||
 __gitlab_cache_invalid() {
   local -a oldp
   oldp=( "$1"(Nmh+1) )
@@ -9,13 +10,14 @@ __gitlab_cache_invalid() {
 __gitlab_projects() {
   # $1 = group id
   # $2 = group name
+  local logrequests # unused
   if _cache_invalid projects_of_$1 || ! _retrieve_cache projects_of_$1; then
     local -a projects
     projects=(${(f)"$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get "https://${GITLABINSTANCE:-gitlab.com}/api/v4/groups/$1/projects" 2>/dev/null | jq -r '.[] | (select(.description!="")|"\(.path):\(.description)"),(select(.description=="")|"\(.path)")')"})
-    logger -i -t zsh-gitlab-tabcompletion -- "$USERNAME requests https://${GITLABINSTANCE:-gitlab.com}/api/v4/groups/$1/projects"
+    zstyle -b ":completion:${curcontext}:" log-requests logrequests && logger -i -t zsh-gitlab-tabcompletion -- "$USERNAME requests https://${GITLABINSTANCE:-gitlab.com}/api/v4/groups/$1/projects"
     _store_cache projects_of_$1 projects
   else
-    logger -i -t zsh-gitlab-tabcompletion -- "using cache for project lookup of group $2 ($1)"
+    zstyle -b ":completion:${curcontext}:" log-requests logrequests && logger -i -t zsh-gitlab-tabcompletion -- "using cache for project lookup of group $2 ($1)"
   fi
   _describe -t gitlab-projects-in-$2 'private gitlab repositories' projects -S '.git'
 }
@@ -33,27 +35,32 @@ __gitlab() {
   #  - I assume and all your work is within one group and its subgroups
   #     TODO: This could be updated moderately easily by going to associative arrays
   #  - The cache is assumed valid for 1h and kept in $HOME/.gitlab-completion-cache
-  #     TODO: make modifyable (path and policy)
-  #     TODO: allow user to turn off
-  #  - Some logging (monitoring API calls) is done via `logger`
-  #     TODO: make modifyable
+  #     Cache invalidation can be done by providing __gitlab_cache_invalid as explained under `_cache_invalid` in [the zshcompsys man page](https://manpages.debian.org/unstable/zsh-common/zshcompsys.1.en.html#UTILITY_FUNCTIONS)
+  #     Alternatively `zstyle ":completion:*:git-clone:*" cache-policy _user_defined_function can be used to specify the completion function.
+  #     Setting `zstyle ":completion:*:git-clone:*" cache-policy true` ignores the cache.
+  #     Setting `zstyle ":completion:*:git-clone:*" cache-path /some/path` allows to manually set the cache path
+  #  - Some logging (monitoring API calls) is done via `logger` if enabled
+  #     Use `zstyle ':completion:*:git-clone:*" log-requests on` to enable logging
+  #     This is not a standard style!
   #  - Ideally users have
   #     zstyle ':completion:*' group-name ''                                     # separate groups and projects
   #     zstyle ':completion:*:descriptions' format $'%{\e[0;33m%}%d:%{\e[0m%}'   # show "headlines" for complections
   #  - paths (full_path/path) and descriptions are parsed from gitlab.
-  #     TODO: Input sanatization might be needed (likely for descriptions if gitlab behaves nicely)
+  #     I suspect the parsed json is safely used and doesn't allow code injection by someone editing descriptions.
+  #     I do not guarantee it!
+  #     I assume `full_path`, `path`, and `id` from gitlab only a-zA-Z0-9 (and / for full_path).
   #  - runtime dependency on `jq`, `curl`, and `logger`
 
 
   local request grouproot
+  local logrequests cache_policy user_specified_cache # unused
   grouproot=$IPREFIX
 
   local cache_file_path
   cache_file_path=$HOME/.gitlab-completion-cache
   zstyle ":completion:${curcontext}:" use-cache on
-  zstyle ":completion:${curcontext}:" cache-path "$cache_file_path"
-  # zstyle -s ":completion:${curcontext}:" cache-policy cache_policy
-  zstyle ":completion:${curcontext}:" cache-policy __gitlab_cache_invalid
+  zstyle -s ":completion:${curcontext}:" cache-path user_specified_cache || zstyle ":completion:${curcontext}:" cache-path "$cache_file_path"
+  zstyle -s ":completion:${curcontext}:" cache-policy cache_policy || zstyle ":completion:${curcontext}:" cache-policy __gitlab_cache_invalid
 
   if _cache_invalid gitlabgroups || ! _retrieve_cache gitlabgroups; then
     local groupsresponse 
@@ -62,14 +69,14 @@ __gitlab() {
     # In case the group's name is already complete, that would remove the group from the search results and prevent groupid lookup.
     [[ -n $PREFIX ]] && request+=\?search=${PREFIX%/}
     groupsresponse=$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get $request 2>/dev/null)
-    logger -i -t zsh-gitlab-tabcompletion -- "$USERNAME requests $request"
+    zstyle -b ":completion:${curcontext}:" log-requests logrequests && logger -i -t zsh-gitlab-tabcompletion -- "$USERNAME requests $request"
     # curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get https://${GITLABINSTANCE:-gitlab.com}/api/v4/groups/${GITLABGROUPID}/descendant_groups 2>/dev/null > /tmp/desc_groups
     # groupsresponse=$(cat /tmp/desc_groups)
     local -a groups
     groups=(${${(f)"$(jq -r '.[] | ( select(.description!="") | "\(.full_path):\(.description)"),( select(.description=="") | "\(.full_path)")' <<< $groupsresponse)"}#${GITLABNAME}/})
     _store_cache gitlabgroups groups groupsresponse
   else
-    logger -i -t zsh-gitlab-tabcompletion -- "using cache for group lookup"
+    zstyle -b ":completion:${curcontext}:" log-requests logrequests && logger -i -t zsh-gitlab-tabcompletion -- "using cache for group lookup"
   fi
   _describe -t 'gitlab-groups' 'private gitlab groups to clone from' groups -qS '/'
   if compset -P '*/' ; then
