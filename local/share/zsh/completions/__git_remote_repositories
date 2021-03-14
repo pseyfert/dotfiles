@@ -13,7 +13,7 @@ __gitlab_projects() {
   local logrequests # unused
   if _cache_invalid projects_of_$1 || ! _retrieve_cache projects_of_$1; then
     local -a projects
-    projects=(${(f)"$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get "https://${GITLABINSTANCE:-gitlab.com}/api/v4/groups/$1/projects" 2>/dev/null | jq -r '.[] | (select(.description!="")|"\(.path):\(.description)"),(select(.description=="")|"\(.path)")')"})
+    projects=(${(f)"$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get "https://${GITLABINSTANCE:-gitlab.com}/api/v4/groups/$1/projects" 2>/dev/null | jq -r '.[] | (select(.description!="")|"\(.path):\(.description)"),(select(.description=="")|"\(.path)")' 2>/dev/null)"})
     zstyle -b ":completion:${curcontext}:" log-requests logrequests && logger -i -t zsh-gitlab-tabcompletion -- "$USERNAME requests https://${GITLABINSTANCE:-gitlab.com}/api/v4/groups/$1/projects"
     _store_cache projects_of_$1 projects
   else
@@ -27,7 +27,7 @@ __gitlab() {
   #  - I assume the environment variables
   #     GITLABINSTANCE the gitlab instance you're working with (gitlab.com is the default)
   #     GITLABNAME     name of your top level gitlab group
-  #     GITLABTOKEN    your personal API token
+  #     GITLABTOKEN    your personal API token (can be left empty for world-readable groups/projects)
   #     GITLABGROUPID  the group id of the aforementionned gitlab group
   #    are set
   #  - I assume you use zsh's git completion. This file should go into your $FPATH and will override
@@ -36,11 +36,11 @@ __gitlab() {
   #     TODO: This could be updated moderately easily by going to associative arrays
   #  - The cache is assumed valid for 1h and kept in $HOME/.gitlab-completion-cache
   #     Cache invalidation can be done by providing __gitlab_cache_invalid as explained under `_cache_invalid` in [the zshcompsys man page](https://manpages.debian.org/unstable/zsh-common/zshcompsys.1.en.html#UTILITY_FUNCTIONS)
-  #     Alternatively `zstyle ":completion:*:git-clone:*" cache-policy _user_defined_function can be used to specify the completion function.
-  #     Setting `zstyle ":completion:*:git-clone:*" cache-policy true` ignores the cache.
-  #     Setting `zstyle ":completion:*:git-clone:*" cache-path /some/path` allows to manually set the cache path
+  #     Alternatively `zstyle ':completion:*:git-clone:*' cache-policy _user_defined_function can be used to specify the completion function.
+  #     Setting `zstyle ':completion:*:git-clone:*' cache-policy true` ignores the cache.
+  #     Setting `zstyle ':completion:*:git-clone:*' cache-path /some/path` allows to manually set the cache path
   #  - Some logging (monitoring API calls) is done via `logger` if enabled
-  #     Use `zstyle ':completion:*:git-clone:*" log-requests on` to enable logging
+  #     Use `zstyle ':completion:*:git-clone:*' log-requests on` to enable logging
   #     This is not a standard style!
   #     The logging does not include the GITLABTOKEN
   #  - Ideally users have
@@ -74,7 +74,7 @@ __gitlab() {
     # curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get https://${GITLABINSTANCE:-gitlab.com}/api/v4/groups/${GITLABGROUPID}/descendant_groups 2>/dev/null > /tmp/desc_groups
     # groupsresponse=$(cat /tmp/desc_groups)
     local -a groups
-    groups=(${${(f)"$(jq -r '.[] | ( select(.description!="") | "\(.full_path):\(.description)"),( select(.description=="") | "\(.full_path)")' <<< $groupsresponse)"}#${GITLABNAME}/})
+    groups=(${${(f)"$(jq -r '.[] | ( select(.description!="") | "\(.full_path):\(.description)"),( select(.description=="") | "\(.full_path)")' 2>/dev/null <<< $groupsresponse)"}#${GITLABNAME}/})
     _store_cache gitlabgroups groups groupsresponse
   else
     zstyle -b ":completion:${curcontext}:" log-requests logrequests && logger -i -t zsh-gitlab-tabcompletion -- "using cache for group lookup"
@@ -83,7 +83,7 @@ __gitlab() {
   if compset -P '*/' ; then
     local potentialsubgroup potentialsubgroupid
     potentialsubgroup=${IPREFIX#$grouproot}
-    potentialsubgroupid=$(jq ".[] | select(.full_path==\"$GITLABNAME/${potentialsubgroup%/}\")|.id" <<< $groupsresponse)
+    potentialsubgroupid=$(jq ".[] | select(.full_path==\"$GITLABNAME/${potentialsubgroup%/}\")|.id" 2>/dev/null <<< $groupsresponse)
     if [[ -n $potentialsubgroupid ]] ; then
       __gitlab_projects $potentialsubgroupid $potentialsubgroup
     fi
