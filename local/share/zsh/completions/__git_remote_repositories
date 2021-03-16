@@ -14,7 +14,7 @@ __gitlab_projects() {
   if _cache_invalid projects_of_$1 || ! _retrieve_cache projects_of_$1; then
     local -a projects
     projects=(${(f)"$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get "https://${GITLABINSTANCE:-gitlab.com}/api/v4/groups/$1/projects" 2>/dev/null | jq -r '.[] | (select(.description!="")|"\(.path):\(.description)"),(select(.description=="")|"\(.path)")' 2>/dev/null)"})
-    zstyle -b ":completion:${curcontext}:" log-requests logrequests && logger -i -t zsh-gitlab-tabcompletion -- "$USERNAME requests https://${GITLABINSTANCE:-gitlab.com}/api/v4/groups/$1/projects"
+    zstyle -b ":completion:${curcontext}:" log-requests logrequests && logger -i -t zsh-gitlab-tabcompletion -- "$USERNAME requests https://${GITLABINSTANCE:-gitlab.com}/api/v4/groups/$1/projects"'?per_page=200'
     _store_cache projects_of_$1 projects
   else
     zstyle -b ":completion:${curcontext}:" log-requests logrequests && logger -i -t zsh-gitlab-tabcompletion -- "using cache for project lookup of group $2 ($1)"
@@ -50,7 +50,14 @@ __gitlab() {
   #     I suspect the parsed json is safely used and doesn't allow code injection by someone editing descriptions.
   #     I do not guarantee it!
   #     I assume `full_path`, `path`, and `id` from gitlab only a-zA-Z0-9 (and / for full_path).
+  #  - Only up to 200 projects/subgroups per group get shown
+  #     TODO: the api assumes progressive access through pagination, can the same be done here?
   #  - runtime dependency on `jq`, `curl`, and `logger`
+  #
+  # assumed bugs:
+  #  - When tabbing after `git clone git@gitlab.com/GROUP/some_letters`, it is assumed `some_letters` is the start of a subgroup name
+  #    and only subgroups starting with these letters are sought. If that happens during cache population, the cache will only contain
+  #    groups matching the search and future cache hits yield incomplete results.
 
 
   local request grouproot
@@ -69,9 +76,9 @@ __gitlab() {
     # When restricting the subgroup search, remove trailing slashes.
     # In case the group's name is already complete, that would remove the group from the search results and prevent groupid lookup.
     [[ -n $PREFIX ]] && request+=\?search=${PREFIX%/}
-    groupsresponse=$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get $request 2>/dev/null)
+    groupsresponse=$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get $request'?per_page=200' 2>/dev/null)
     zstyle -b ":completion:${curcontext}:" log-requests logrequests && logger -i -t zsh-gitlab-tabcompletion -- "$USERNAME requests $request"
-    # curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get https://${GITLABINSTANCE:-gitlab.com}/api/v4/groups/${GITLABGROUPID}/descendant_groups 2>/dev/null > /tmp/desc_groups
+    # curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get https://${GITLABINSTANCE:-gitlab.com}/api/v4/groups/${GITLABGROUPID}/descendant_groups'?per_page=200' 2>/dev/null > /tmp/desc_groups
     # groupsresponse=$(cat /tmp/desc_groups)
     local -a groups
     groups=(${${(f)"$(jq -r '.[] | ( select(.description!="") | "\(.full_path):\(.description)"),( select(.description=="") | "\(.full_path)")' 2>/dev/null <<< $groupsresponse)"}#${GITLABNAME}/})
