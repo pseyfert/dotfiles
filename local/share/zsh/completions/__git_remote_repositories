@@ -55,14 +55,12 @@ __gitlab() {
   #  - Only up to 200 projects/subgroups per group get shown
   #     TODO: the api assumes progressive access through pagination, can the same be done here?
   #  - runtime dependency on `jq`, `curl`, and `logger`
-  #
-  # assumed bugs:
   #  - When tabbing after `git clone git@gitlab.com/GROUP/some_letters`, it is assumed `some_letters` is the start of a subgroup name
-  #    and only subgroups starting with these letters are sought. If that happens during cache population, the cache will only contain
-  #    groups matching the search and future cache hits yield incomplete results.
+  #    and only subgroups starting with these letters are queried from the API on a cache miss. These don't populate the cache and a
+  #    later refined tab or project lookup will need to query the API again to look up the group id.
 
 
-  local request grouproot
+  local request grouproot groupsresponse
   local logrequests cache_policy user_specified_cache # unused
   grouproot=$IPREFIX
 
@@ -73,18 +71,18 @@ __gitlab() {
   zstyle -s ":completion:${curcontext}:" cache-policy cache_policy || zstyle ":completion:${curcontext}:" cache-policy __gitlab_cache_invalid
 
   if _cache_invalid gitlabgroups || ! _retrieve_cache gitlabgroups; then
-    local groupsresponse 
     request="https://${GITLABINSTANCE:-gitlab.com}/api/v4/groups/$GITLABGROUPID/descendant_groups"'?per_page=200'
     # When restricting the subgroup search, remove trailing slashes.
     # In case the group's name is already complete, that would remove the group from the search results and prevent groupid lookup.
-    [[ -n $PREFIX ]] && request+='?search='${PREFIX%/} 
+    [[ -n $PREFIX ]] && request+='?search='${PREFIX%/}
     groupsresponse=$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get $request 2>/dev/null)
     zstyle -b ":completion:${curcontext}:" log-requests logrequests && logger -i -t zsh-gitlab-tabcompletion -- "$USERNAME requests $request"
     # curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get https://${GITLABINSTANCE:-gitlab.com}/api/v4/groups/${GITLABGROUPID}/descendant_groups'?per_page=200' 2>/dev/null > /tmp/desc_groups
     # groupsresponse=$(cat /tmp/desc_groups)
     local -a groups
     groups=(${${(f)"$(jq -r '.[] | ( select(.description!="") | "\(.full_path):\(.description)"),( select(.description=="") | "\(.full_path)")' 2>/dev/null <<< $groupsresponse)"}#${GITLABNAME}/})
-    _store_cache gitlabgroups groups groupsresponse
+    # only store to cache when unrestricted search was done
+    [[ -n $PREFIX ]] || _store_cache gitlabgroups groups groupsresponse
   else
     zstyle -b ":completion:${curcontext}:" log-requests logrequests && logger -i -t zsh-gitlab-tabcompletion -- "using cache for group lookup"
   fi
