@@ -15,7 +15,7 @@ __gitlab_projects() {
     local -a projects
     local request
     request="https://${GITLABINSTANCE:-gitlab.com}/api/v4/groups/$1/projects"'?per_page=200'
-    projects=(${(f)"$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get $request 2>/dev/null | jq -r '.[] | (select(.description!="")|"\(.path):\(.description)"),(select(.description=="")|"\(.path)")' 2>/dev/null)"})
+    projects=(${(f)"$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get $request 2>/dev/null | jq -r '.[] | (select(.description!=""and .description!=null)|"\(.path):\(.description|gsub("[\\n\\r]";""))"),(select(.description=="" or .description==null)|"\(.path)")' 2>/dev/null)"})
     zstyle -b ":completion:${curcontext}:" log-requests logrequests && logger -i -t zsh-gitlab-tabcompletion -- "$USERNAME requests $request"
     _store_cache projects_of_$1 projects
   else
@@ -80,7 +80,7 @@ __gitlab() {
     # curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get https://${GITLABINSTANCE:-gitlab.com}/api/v4/groups/${GITLABGROUPID}/descendant_groups'?per_page=200' 2>/dev/null > /tmp/desc_groups
     # groupsresponse=$(cat /tmp/desc_groups)
     local -a groups
-    groups=(${${(f)"$(jq -r '.[] | ( select(.description!="") | "\(.full_path):\(.description)"),( select(.description=="") | "\(.full_path)")' 2>/dev/null <<< $groupsresponse)"}#${GITLABNAME}/})
+    groups=(${${(f)"$(jq -r '.[] | ( select(.description!="" and .description!=null) | "\(.full_path):\(.description|gsub("[\\n\\r]";""))"),( select(.description=="" or .description==null) | "\(.full_path)")' 2>/dev/null <<< $groupsresponse)"}#${GITLABNAME}/})
     # only store to cache when unrestricted search was done
     [[ -n $PREFIX ]] || _store_cache gitlabgroups groups groupsresponse
   else
