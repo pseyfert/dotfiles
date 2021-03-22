@@ -15,15 +15,13 @@ __gitlab_projects() {
     local -a projects
     local request
     request="https://${GITLABINSTANCE:-gitlab.com}/api/v4/groups/$1/projects"'?per_page=200'
-    # TODO: filter on .namespace.full_path
-    #       test case https://gitlab.cern.ch/api/v4/groups/120/projects?per_page=200
-    projects=(${(f)"$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get $request 2>/dev/null | jq -r '.[] | (select(.description!=""and .description!=null)|"\(.path):\(.description|gsub("[\\n\\r]";""))"),(select(.description=="" or .description==null)|"\(.path)")' 2>/dev/null)"})
+    projects=(${(f)"$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get $request 2>/dev/null | jq -r '.[] '"| select(.namespace.full_path == \"$2\") |"' (select(.description!=""and .description!=null)|"\(.path):\(.description|gsub("[\\n\\r]";""))"),(select(.description=="" or .description==null)|"\(.path)")' 2>/dev/null)"})
     zstyle -b ":completion:${curcontext}:" log-requests logrequests && logger -i -t zsh-gitlab-tabcompletion -- "$USERNAME requests $request"
     _store_cache projects_of_$1 projects
   else
     zstyle -b ":completion:${curcontext}:" log-requests logrequests && logger -i -t zsh-gitlab-tabcompletion -- "using cache for project lookup of group $2 ($1)"
   fi
-  _describe -t gitlab-projects-in-$2 'private gitlab repositories' projects -S '.git'
+  _describe -t gitlab-projects-in-$2 "private gitlab repositories in $2" projects -S '.git'
 }
 
 __gitlab() {
@@ -60,6 +58,9 @@ __gitlab() {
   #  - When tabbing after `git clone git@gitlab.com/GROUP/some_letters`, it is assumed `some_letters` is the start of a subgroup name
   #    and only subgroups starting with these letters are queried from the API on a cache miss. These don't populate the cache and a
   #    later refined tab or project lookup will need to query the API again to look up the group id.
+  #  - I mostly assume that group and namespace are identical. In an edge case a request for a group's projects returned projects in a
+  #    different namespace. These are now filtered out but after all I ignore the concept of namespaces, so in terms of subgroups they
+  #    might still be treated incorrectly.
 
 
   local request grouproot groupsresponse
@@ -91,10 +92,10 @@ __gitlab() {
   _describe -t 'gitlab-groups' 'private gitlab groups to clone from' groups -qS '/'
   if compset -P '*/' ; then
     local potentialsubgroup potentialsubgroupid
-    potentialsubgroup=${IPREFIX#$grouproot}
-    potentialsubgroupid=$(jq ".[] | select(.full_path==\"$GITLABNAME/${potentialsubgroup%/}\")|.id" 2>/dev/null <<< $groupsresponse)
+    potentialsubgroup=${${IPREFIX#$grouproot}%/}
+    potentialsubgroupid=$(jq ".[] | select(.full_path==\"$GITLABNAME/${potentialsubgroup}\")|.id" 2>/dev/null <<< $groupsresponse)
     if [[ -n $potentialsubgroupid ]] ; then
-      __gitlab_projects $potentialsubgroupid $potentialsubgroup
+      __gitlab_projects $potentialsubgroupid $GITLABNAME/$potentialsubgroup
     fi
   else
     __gitlab_projects $GITLABGROUPID $GITLABNAME
