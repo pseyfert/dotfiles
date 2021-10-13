@@ -31,3 +31,5 @@
 	defaultBranch = main
 [log]
 	date = iso
+[diff]
+        noprefix = true
