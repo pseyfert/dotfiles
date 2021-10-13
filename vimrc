@@ -10,6 +10,8 @@ set scrolloff=5
 filetype plugin on
 set background=light
 
+set wildmenu
+
 """ undo stuff
 set undofile
 set undodir=$HOME/.vim_undo
