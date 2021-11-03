@@ -66,6 +66,7 @@ endif
 " small tweaked wrt defaults for compatibility with syntax highlighting
 " otherwise I end up with red on red (string on diff)
 :hi DiffText term=underline cterm=underline ctermbg=LightMagenta gui=bold guibg=Red
+:hi DiffAdd term=bold ctermbg=6 gui=bold guifg=Blue guibg=DarkCyan
 
 "" LINEDIFF
 " diff lines within a file (requires the linediff plugin)
