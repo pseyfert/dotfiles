@@ -1,0 +1,145 @@
+#autoload
+
+(( $+functions[__gitlab_cache_invalid] )) ||
+__gitlab_cache_invalid() {
+  local -a oldp
+  oldp=( "$1"(Nmh+1) )
+  (( $#oldp ))
+}
+
+_gitlab_push_options() {
+  local logrequests cache_policy user_specified_cache # unused
+
+  local cache_file_path
+  cache_file_path=$HOME/.gitlab-completion-cache
+  zstyle ":completion:${curcontext}:" use-cache on
+  zstyle -s ":completion:${curcontext}:" cache-path user_specified_cache || zstyle ":completion:${curcontext}:" cache-path "$cache_file_path"
+  zstyle -s ":completion:${curcontext}:" cache-policy cache_policy || zstyle ":completion:${curcontext}:" cache-policy __gitlab_cache_invalid
+
+
+  local oldiprefix="$IPREFIX"
+  if compset -P 1 '*='; then
+    local current_option="${${IPREFIX#$oldiprefix}%=}"
+    case $current_option in
+      # TODO: pick remote from current command line
+      # TODO: assumes the remote is 'origin' and it uses the git@gitlab.com: url
+      # TODO: *un*assign and *un*label could look at the current MR
+      # TODO: milestone
+      (merge_request.target)
+        __git_remote_branch_names_noprefix
+        ;;
+      (merge_request.*label)
+        local -a labels
+        namespacepath=${${${"$(git remote get-url origin)"#git@${GITLABINSTANCE:-gitlab.com}:}%.git}//\//%2F}
+        if _cache_invalid labels_of_$namespacepath || ! _retrieve_cache labels_of_$namespacepath; then
+          projectid=$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get https://${GITLABINSTANCE:-gitlab.com}/api/v4/projects/$namespacepath 2> /dev/null | jq -r '.id' 2> /dev/null)
+          labels=(${(f)"$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get https://${GITLABINSTANCE:-gitlab.com}/api/v4/projects/$projectid/labels 2> /dev/null | jq -r '.[] | (select(.description!="" and .description!=null)|"\(.name|gsub(":";"\\:")):\(.description|gsub("[\\n\\r]";""))"),(select(.description=="" or .description==null)|"\(.name|gsub(":";"\\:"))")' 2> /dev/null)"})
+          _store_cache labels_of_$namespacepath labels
+        else
+          # TODO: logging
+        fi
+        _describe -t gitlab-labels-$namespacepath "Labels" labels
+        # TODO: implement this and others
+        ;;
+      (merge_request.*assign)
+        namespacepath=${${${"$(git remote get-url origin)"#git@${GITLABINSTANCE:-gitlab.com}:}%.git}//\//%2F}
+        if _cache_invalid users_of_$namespacepath || ! _retrieve_cache users_of_$namespacepath; then
+          projectid=$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get https://${GITLABINSTANCE:-gitlab.com}/api/v4/projects/$namespacepath 2> /dev/null | jq -r '.id' 2> /dev/null)
+          users=(${(f)"$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get https://${GITLABINSTANCE:-gitlab.com}/api/v4/projects/$projectid/users 2> /dev/null | jq -r '.[] | (select(.name!="" and .name!=null)|"\(.username):\(.name)"),(select(.name=="" or .name==null)|"\(.username)")' 2> /dev/null)"})
+          _store_cache users_of_$namespacepath users
+        else
+          # TODO: logging
+        fi
+        _describe -t gitlab-labels "Users" users
+        ;;
+      (*)
+        # TODO: get description from $pushargs
+        _message "That's up to you"
+        ;;
+    esac
+  else
+    local -a pushflags
+    local -a pushargs
+    pushflags=(
+      "ci.skip:Do not create a CI for the latest push"
+      "merge_request.create:Create a new merge request for the pushed branch."
+      "merge_request.merge_when_pipeline_succeeds:Set the merge request to merge when its pipeline succeeds."
+      "merge_request.remove_source_branch:Set the merge request to remove the source branch when it’s merged."
+      )
+    pushargs=(
+      "ci.variable:Provide a CI variable"
+      "merge_request.target:Set the target of the merge request to a particular branch or upstream project."
+      "merge_request.title:Set the title of the merge request."
+      "merge_request.description:Set the description of the merge request."
+      "merge_request.milestone:Set the milestone of the merge request."
+      "merge_request.label:Add labels to the merge request. If the label does not exist, it is created."
+      "merge_request.unlabel:Remove labels from the merge request."
+      "merge_request.assign:Assign users to the merge request. Accepts username or user ID."
+      "merge_request.unassign:Remove assigned users from the merge request. Accepts username or user ID."
+      )
+    _describe -t gitlabpushopts "gitlab push options" \
+      pushargs -S '=' -- \
+      pushflags
+  fi
+}
+
+# The rest of this file almost verbatimely copied from the zsh project.
+local ret=1
+local -a sign
+sign=(
+  {yes,true}'\:always,\ and\ fail\ if\ unsupported\ by\ server'
+  {no,false}'\:never'
+  if-asked'\:iff\ supported\ by\ server'
+)
+# NOTE: For --receive-pack we use _files to complete, even though this will
+# only complete files on the local end, not the remote end.  Still, it may be
+# helpful to get some sort of completion going, perhaps modifying the path
+# later on to match the remote end.
+_arguments -S -s $endopt \
+  '--all[push all refs under refs/heads/]' \
+  '--prune[remove remote branches that do not have a local counterpart]' \
+  '--mirror[push all refs under refs/heads/ and refs/tags/ and delete non-existing refs]' \
+  '(-n --dry-run)'{-n,--dry-run}'[do everything except actually send the updates]' \
+  '--porcelain[produce machine-readable output]' \
+  '(-d --delete)'{-d,--delete}'[delete all listed refs from the remote repository]' \
+  '--tags[all tags under refs/tags are pushed]' \
+  '--follow-tags[also push missing annotated tags reachable from the pushed refs]' \
+  '(--receive-pack --exec)'{--receive-pack=-,--exec=-}'[path to git-receive-pack on remote]:remote git-receive-pack:_files' \
+  '(--force-with-lease --no-force-with-lease)*--force-with-lease=-[allow refs that are not ancestors to be updated if current ref matches expected value]::ref and expectation:->lease' \
+  '(--force-with-lease --no-force-with-lease)--no-force-with-lease[cancel all previous force-with-lease specifications]' \
+  '(-f --force)'{-f,--force}'[allow refs that are not ancestors to be updated]' \
+  '(:)--repo=[default repository to use]:repository:__git_any_repositories' \
+  '(-u --set-upstream)'{-u,--set-upstream}'[add upstream reference for each branch that is up to date or pushed]' \
+  '(       --no-thin)--thin[try to minimize number of objects to be sent]' \
+  '(--thin          )--no-thin[do not try to minimize number of objects to be sent]' \
+  '(-q --quiet -v --verbose --progress)'{-q,--quiet}'[suppress all output]' \
+  '(-q --quiet -v --verbose)'{-v,--verbose}'[output additional information]' \
+  '(-q --quiet)--progress[output progress information]' \
+  '(--verify)--no-verify[bypass the pre-push hook]' \
+  '--recurse-submodules=[submodule handling]:submodule handling:((
+      check\:"refuse to push if submodule commit not to be found on remote"
+      on-demand\:"push all changed submodules"
+      only\:"submodules will be recursively pushed while the superproject is left unpushed"
+      no\:"no submodule handling"))' \
+  "(--no-signed --signed)--sign=-[GPG sign the push]::signing enabled:(($^^sign))" \
+  '(--no-signed --sign)--signed[GPG sign the push]' \
+  "(--sign --signed)--no-signed[don't GPG sign the push]" \
+  '--atomic[request atomic transaction on remote side]' \
+  '*'{-o+,--push-option=}'[transmit string to server to pass to pre/post-receive hooks]:string:_gitlab_push_options' \
+  '(-4 --ipv4 -6 --ipv6)'{-4,--ipv4}'[use IPv4 addresses only]' \
+  '(-4 --ipv4 -6 --ipv6)'{-6,--ipv6}'[use IPv6 addresses only]' \
+  ': :__git_any_repositories' \
+  '*: :__git_ref_specs_pushy' && ret=0
+
+case $state in
+  (lease)
+     compset -P '*:'
+     if [[ -n ${IPREFIX#*=} ]]; then
+       _guard '[[:xdigit:]]#' "expected value" && ret=0
+     else
+       __git_remote_branch_names_noprefix && ret=0
+     fi
+    ;;
+esac
+
+return ret
