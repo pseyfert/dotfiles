@@ -62,6 +62,7 @@ if &diff
   " tweak yet another syntax color + diff color issue (preprocessor magenta on
   " diff magenta)
   colorscheme elflord
+  :hi Comment term=bold ctermfg=12 guifg=#80a0ff
 endif
 " small tweaked wrt defaults for compatibility with syntax highlighting
 " otherwise I end up with red on red (string on diff)
