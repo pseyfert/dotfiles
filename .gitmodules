@@ -112,3 +112,6 @@
 [submodule "vim/bundle/vim-systemd-syntax"]
 	path = vim/bundle/vim-systemd-syntax
 	url = https://github.com/wgwoods/vim-systemd-syntax
+[submodule "vim/bundle/vim-carbon-lang"]
+	path = vim/bundle/vim-carbon-lang
+	url = https://github.com/carbon-language/vim-carbon-lang.git
