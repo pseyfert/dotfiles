@@ -115,3 +115,9 @@
 [submodule "vim/bundle/vim-carbon-lang"]
 	path = vim/bundle/vim-carbon-lang
 	url = https://github.com/carbon-language/vim-carbon-lang.git
+[submodule "vim/bundle/vim-abolish"]
+	path = vim/bundle/vim-abolish
+	url = https://github.com/tpope/vim-abolish.git
+[submodule "vim/bundle/coc.nvim.git"]
+	path = vim/bundle/coc.nvim.git
+	url = https://github.com/neoclide/coc.nvim.git

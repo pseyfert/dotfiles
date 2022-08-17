@@ -12,11 +12,16 @@ set background=light
 
 set wildmenu
 
+
+let g:coc_disable_startup_warning = 1
+
 """ undo stuff
 set undofile
 set undodir=$HOME/.vim_undo
 set undolevels=1000
 set undoreload=10000
+
+set directory^=$HOME/.cache/vim//
 
 """ COMMANDS
 "
