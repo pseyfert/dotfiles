@@ -1,0 +1,18 @@
+{
+  "cSpell.enableCompoundWords": true,
+  "cSpell.words": [
+    "odometry",
+    "rosbag",
+    "substate",
+    "rosbags",
+    "roscore",
+    "alphasense",
+    "sevensense",
+    "debians",
+    "pseyfert"
+  ],
+
+
+
+  "rust-analyzer.disableProgressNotifications": true
+}
