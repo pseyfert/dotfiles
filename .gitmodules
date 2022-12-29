@@ -121,3 +121,9 @@
 [submodule "vim/bundle/coc.nvim.git"]
 	path = vim/bundle/coc.nvim.git
 	url = https://github.com/neoclide/coc.nvim.git
+[submodule "zsh-rust-env-log-completion"]
+	path = zsh-rust-env-log-completion
+	url = https://github.com/pseyfert/zsh-rust-env-log-completion
+[submodule "submodules/zsh-rust-env-log-completion"]
+	path = submodules/zsh-rust-env-log-completion
+	url = https://github.com/pseyfert/zsh-rust-env-log-completion
