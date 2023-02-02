@@ -127,3 +127,6 @@
 [submodule "submodules/zsh-rust-env-log-completion"]
 	path = submodules/zsh-rust-env-log-completion
 	url = https://github.com/pseyfert/zsh-rust-env-log-completion
+[submodule "vim/bundle/vim-hjson"]
+	path = vim/bundle/vim-hjson
+	url = https://github.com/hjson/vim-hjson

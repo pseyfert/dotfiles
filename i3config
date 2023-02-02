@@ -172,6 +172,9 @@ bindsym $mod+space exec --no-startup-id playerctl play-pause
 # bindsym $mod+o exec --no-startup-id playerctl play-pause
 # bindsym XF86AudioPlay exec --no-startup-id playerctl play-pause
 
+bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set +10%
+bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 10%-
+
 # reload the configuration file
 bindsym $mod+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
