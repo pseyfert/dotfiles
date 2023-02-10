@@ -65,6 +65,7 @@ _gitlab_push_options() {
       "merge_request.create:Create a new merge request for the pushed branch."
       "merge_request.merge_when_pipeline_succeeds:Set the merge request to merge when its pipeline succeeds."
       "merge_request.remove_source_branch:Set the merge request to remove the source branch when it’s merged."
+      "merge_request.draft:Mark the merge request as a draft."
       )
     pushargs=(
       "ci.variable:Provide a CI variable"
