@@ -42,7 +42,7 @@ bindsym $mod+Shift+q kill
 #bindsym Mod1+F2 exec rofi -show run
 bindsym Mod1+F3 exec rofi -terminal urxvt -run-command "/usr/bin/zsh -i -c '{cmd}'" -rnow -show run
 bindsym Mod1+F2 exec /home/pseyfert/.local/bin/shellex
-bindsym $mod+z exec i3lock
+bindsym $mod+z exec i3lock -i /home/pseyfert/G6lbTrj_4k.png
 bindsym $mod+Shift+z exec xtrlock
 bindsym $mod+p exec scrot
 bindsym $mod+Shift+p exec scrot -s
