@@ -66,8 +66,12 @@ if &diff
   set diffopt+=iwhite
   " tweak yet another syntax color + diff color issue (preprocessor magenta on
   " diff magenta)
-  colorscheme elflord
+  " FIXME: some recent update turned elflord into background=dark
+  " colorscheme elflord
   :hi Comment term=bold ctermfg=12 guifg=#80a0ff
+  :hi Function term=bold ctermfg=130 gui=bold guifg=Brown
+  :hi Conditional term=bold ctermfg=130 gui=bold guifg=Brown
+  :hi Repeat term=bold ctermfg=130 gui=bold guifg=Brown
 endif
 " small tweaked wrt defaults for compatibility with syntax highlighting
 " otherwise I end up with red on red (string on diff)
@@ -142,9 +146,17 @@ autocmd FileType go noremap <C-B>r :w<cr>:GoRun<cr>
 "" Rust
 "
 autocmd FileType rust noremap <C-I> :RustFmt<cr>
-autocmd FileType rust compiler rustc
+" autocmd FileType rust compiler rustc
 autocmd FileType rust noremap <C-B>b :w<cr>:call MakeAndShow()<cr>
 autocmd FileType rust noremap <C-B>r :RustRun<cr>
+autocmd Filetype rust map <buffer> K :call CocAction('doHover')<cr>
+autocmd CursorHold * silent call CocActionAsync('highlight')
+let &updatetime=400
+
+inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
+                              \: "\<C-g>9\<CR>\<c-r>=coc#on_enter()\<CR>"
+
+nmap <C-B>f <Plug>(coc-fix-current)
 
 "" C/C++/JS/... formatting
 "
