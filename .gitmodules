@@ -127,3 +127,9 @@
 [submodule "vim/bundle/vim-hjson"]
 	path = vim/bundle/vim-hjson
 	url = https://github.com/hjson/vim-hjson
+[submodule "vim/bundle/codeium.vim"]
+	path = vim/bundle/codeium.vim
+	url = https://github.com/Exafunction/codeium.vim
+[submodule "submodules/cargo-watch"]
+	path = submodules/cargo-watch
+	url = https://github.com/watchexec/cargo-watch
