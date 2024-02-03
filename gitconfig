@@ -33,3 +33,5 @@
 	date = iso
 [diff]
         noprefix = true
+[branch]
+  sort = -committerdate
