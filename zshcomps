@@ -22,3 +22,5 @@ zstyle ':completion:*:descriptions' format $'%{\e[0;33m%}%d:%{\e[0m%}'
 zstyle ':completion:*' group-name ''
 
 zstyle ':completion:*:' fake-parameters RUST_LOG
+
+zstyle ':completion::complete:cargo:argument-1:commands' command "cargo --color=never --list"
