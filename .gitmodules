@@ -133,3 +133,6 @@
 [submodule "submodules/cargo-watch"]
 	path = submodules/cargo-watch
 	url = https://github.com/watchexec/cargo-watch
+[submodule "submodules/autocomplete-ALL-the-things"]
+	path = submodules/autocomplete-ALL-the-things
+	url = https://github.com/pseyfert/autocomplete-ALL-the-things.git
