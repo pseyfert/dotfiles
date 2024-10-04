@@ -98,7 +98,13 @@ noremap <C-B>l :ALELint<cr>
 "  - instead autopep8 for python
 "  - ensure lsb_release is installed
 "  - nasty: g:os comes with trailing linefeed
-let g:os=system('echo ${$(lsb_release -d)[2]}')
+" on kona, lsb_release is sometimes slow (caching?)
+let g:hostname=system('hostname')
+if g:hostname == "kona\n"
+  let g:os="Debian\n"
+else
+  let g:os=system('echo ${$(lsb_release -d)[2]}')
+endif
 
 "" Python
 "
@@ -228,6 +234,7 @@ elseif g:os == "Arch\n"
 elseif g:os == "Debian\n"
 endif
 autocmd FileType c,cpp,proto,javascript,objc,java,typescript,arduino nmap <C-B>b :YcmDiags<cr>
+autocmd FileType markdown let &makeprg='make test_build/%<.html'
 
 let g:ale_linters_explicit = 1
 let g:ale_linters = { 'cpp': ['clangtidy'], 'python': ['pylint', 'mypy']}
@@ -398,3 +405,15 @@ let &errorformat="%*[^\"]\"%f\"%*\\D%l: %m,
       \%X%*\\a: Leaving directory %*[`']%f',
       \%DMaking %*\\a in %f,
       \%f|%l| %m"
+
+let g:codeium_no_map_tab = v:true
+let g:codeium_enabled = v:true
+let g:codeium_filetypes = {
+      \ "text": v:false,
+      \ "rust": v:true,
+      \ "python": v:true,
+      \ "cpp": v:true }
+let g:codeium_disable_bindings = 1
+imap  <C-c><C-N> <Cmd>call codeium#CycleCompletions(1)<cr>
+imap  <C-c><C-P> <Cmd>call codeium#CycleCompletions(-1)<cr>
+imap  <script><silent><nowait><expr> <C-c><C-c> codeium#Accept()
