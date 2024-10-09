@@ -20,13 +20,9 @@ alias 'git-status-ignoreuntracked'='git status -uno'
 
 alias 'ls'='ls -F --color=auto'
 alias 'll'='ls -lF --color=auto'
-# arch
-alias 'cal'='cal -3mw'
-if [[ $(lsb_release -si) = Debian ]]; then
-  alias 'cal'='ncal -b3w'
-fi
 alias 'screeny'='import xwindow.png'
 alias 'fixpdf'='gs -o repaired.pdf -dPDFSETTINGS=/prepress -sDEVICE=pdfwrite '
+# alias 'tree'='erd --suppress-size --layout=inverted'
 
 alias "ROOT_ENV"="export CPPFLAGS=\"$CPPFLAGS \`root-config --cflags\` -march=native -O3 -flto -g -Wextra -Wall -Wshadow\" ; export LDLIBS=\"$LDLIBS \`root-config --libs\` -lRooStats -lRooFitCore -lRooFit -lMinuit -lFoam -lMathMore -lTMVA\`\"; export LDFLAGS=\"$LDFLAGS -m64 -g -march=native -flto -fuse-ld=gold\"; export CPP=c++; export CXX=c++; export CC=c++"
 
@@ -50,10 +46,20 @@ alias -g 'cmake-gen'='cmake -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_R
 
 alias gdb-bt="gdb -q -n -ex bt -batch"
 alias coredump-bt="coredumpctl -q --debugger=/home/pseyfert/.local/bin/gdb-bt debug"
-if [[ $(lsb_release -si) = Debian ]]; then
-  alias fd=fdfind
-  alias bat=batcat
-fi
+case $(lsb_release -si) in
+  Debian)
+    # On Debian, I take these from apt. On Ubuntu from ~/.cargo
+    alias fd=fdfind;
+    alias bat=batcat;
+    ;&
+  Ubuntu)
+    alias 'cal'='ncal -3Mwb'
+    ;;
+  *)
+    # e.g. arch
+    alias 'cal'='cal -3wm'
+    ;;
+esac
 alias erd="erd --suppress-size --sort name --layout inverted"
 
 alias 'ssh-tunnel'='ssh -fCND 8081'
