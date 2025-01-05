@@ -139,3 +139,6 @@
 [submodule "vim/bundle/vim-highlighter"]
 	path = vim/bundle/vim-highlighter
 	url = https://github.com/azabiong/vim-highlighter.git
+[submodule "submodules/zsh-distrobox-completion"]
+	path = submodules/zsh-distrobox-completion
+	url = https://github.com/pseyfert/zsh-distrobox-completion
