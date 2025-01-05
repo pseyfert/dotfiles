@@ -136,3 +136,6 @@
 [submodule "submodules/autocomplete-ALL-the-things"]
 	path = submodules/autocomplete-ALL-the-things
 	url = https://github.com/pseyfert/autocomplete-ALL-the-things.git
+[submodule "vim/bundle/vim-highlighter"]
+	path = vim/bundle/vim-highlighter
+	url = https://github.com/azabiong/vim-highlighter.git
