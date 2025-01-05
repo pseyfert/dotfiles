@@ -20,13 +20,18 @@ alias 'git-status-ignoreuntracked'='git status -uno'
 
 alias 'ls'='ls -F --color=auto'
 alias 'll'='ls -lF --color=auto'
+# arch
 alias 'cal'='cal -3mw'
+if [[ $(lsb_release -si) = Debian ]]; then
+  alias 'cal'='ncal -b3w'
+fi
 alias 'screeny'='import xwindow.png'
 alias 'fixpdf'='gs -o repaired.pdf -dPDFSETTINGS=/prepress -sDEVICE=pdfwrite '
 
 alias "ROOT_ENV"="export CPPFLAGS=\"$CPPFLAGS \`root-config --cflags\` -march=native -O3 -flto -g -Wextra -Wall -Wshadow\" ; export LDLIBS=\"$LDLIBS \`root-config --libs\` -lRooStats -lRooFitCore -lRooFit -lMinuit -lFoam -lMathMore -lTMVA\`\"; export LDFLAGS=\"$LDFLAGS -m64 -g -march=native -flto -fuse-ld=gold\"; export CPP=c++; export CXX=c++; export CC=c++"
 
 alias 'vga-stuff-off'="xrandr --output LVDS-1 --auto --output VGA-1 --off --output HDMI-2 --off --output DP-1 --off --output DP-2 --off"
+alias 'vga-stuff-off'="xrandr --output eDP-1-1 --auto --output DP-1 --off --output DP-0 --off"
 alias 'vga-clone-1024'="(xrandr --output VGA-1 --mode 1024x768 --same-as LVDS-1)"
 alias 'vga-clone-auto'="(xrandr --output VGA-1 --auto --same-as LVDS-1 --preferred) "
 alias 'vga-dual-auto'="(xrandr --output VGA-1 --auto --right-of LVDS-1 --preferred --output LVDS-1 --auto)"
@@ -49,3 +54,6 @@ if [[ $(lsb_release -si) = Debian ]]; then
   alias fd=fdfind
   alias bat=batcat
 fi
+alias erd="erd --suppress-size --sort name --layout inverted"
+
+alias 'ssh-tunnel'='ssh -fCND 8081'
