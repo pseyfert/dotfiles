@@ -141,3 +141,5 @@ bindkey -v "^Y" push-line
 [[ -f $HOME/.zsh/zshfunctions ]] && source $HOME/.zsh/zshfunctions
 [[ -f $HOME/.zsh/zshaliases ]] && source $HOME/.zsh/zshaliases
 [[ -f $HOME/.zsh/zsh.$HOST ]] && source $HOME/.zsh/zsh.$HOST
+
+export MANPATH=$HOME/.local/share/man
