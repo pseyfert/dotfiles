@@ -1,0 +1,5 @@
+#autoload
+
+local -a oldp
+oldp=( "$1"(Nmh+1) )
+(( $#oldp ))

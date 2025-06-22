@@ -43,18 +43,12 @@ _gitlab_push_options() {
         ;;
       (merge_request.*assign)
         namespacepath=${${${"$(git remote get-url origin)"#git@${GITLABINSTANCE:-gitlab.com}:}%.git}//\//%2F}
-        if _cache_invalid users_of_$namespacepath || ! _retrieve_cache users_of_$namespacepath; then
-          projectid=$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get https://${GITLABINSTANCE:-gitlab.com}/api/v4/projects/$namespacepath 2> /dev/null | jq -r '.id' 2> /dev/null)
-          users=(${(f)"$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get https://${GITLABINSTANCE:-gitlab.com}/api/v4/projects/$projectid/users 2> /dev/null | jq -r '.[] | (select(.name!="" and .name!=null)|"\(.username):\(.name)"),(select(.name=="" or .name==null)|"\(.username)")' 2> /dev/null)"})
-          _store_cache users_of_$namespacepath users
-        else
-          # TODO: logging
-        fi
-        _describe -t gitlab-labels "Users" users
+        __gitlab_users $namespacepath
         ;;
       (*)
         # TODO: get description from $pushargs
         _message "That's up to you"
+        _message ${line[1]:-origin}
         ;;
     esac
   else

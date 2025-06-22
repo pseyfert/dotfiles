@@ -1,112 +1,46 @@
 #autoload
 
-(( $+functions[__gitlab_cache_invalid] )) ||
-__gitlab_cache_invalid() {
-  local -a oldp
-  oldp=( "$1"(Nmh+1) )
-  (( $#oldp ))
-}
-
-__gitlab_projects() {
-  # $1 = group id
-  # $2 = group name
-  local logrequests # unused
-  if _cache_invalid projects_of_$1 || ! _retrieve_cache projects_of_$1; then
-    local -a projects
-    local request
-    request="https://${GITLABINSTANCE:-gitlab.com}/api/v4/groups/$1/projects"'?per_page=200'
-    projects=(${(f)"$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get $request 2>/dev/null | jq -r '.[] '"| select(.namespace.full_path == \"$2\") |"' (select(.description!=""and .description!=null)|"\(.path):\(.description|gsub("[\\n\\r]";""))"),(select(.description=="" or .description==null)|"\(.path)")' 2>/dev/null)"})
-    zstyle -b ":completion:${curcontext}:" log-requests logrequests && logger -i -t zsh-gitlab-tabcompletion -- "$USERNAME requests $request"
-    _store_cache projects_of_$1 projects
-  else
-    zstyle -b ":completion:${curcontext}:" log-requests logrequests && logger -i -t zsh-gitlab-tabcompletion -- "using cache for project lookup of group $2 ($1)"
-  fi
-  _describe -t gitlab-projects-in-$2 "private gitlab repositories in $2" projects -S '.git'
-}
-
-__gitlab() {
-  # behaviour, assumptions, mandatory customisation
-  #  - I assume the environment variables
-  #     GITLABINSTANCE the gitlab instance you're working with (gitlab.com is the default)
-  #     GITLABNAME     name of your top level gitlab group
-  #     GITLABTOKEN    your personal API token (can be left empty for world-readable groups/projects)
-  #     GITLABGROUPID  the group id of the aforementionned gitlab group
-  #    are set
-  #  - I assume you use zsh's git completion. This file should go into your $FPATH and will override
-  #     the (intentionally overridable) function __git_remote_repositories [here](https://github.com/zsh-users/zsh/blob/2644e3097dd26babf73ea8664f30341b262a2450/Completion/Unix/Command/_git#L7295).
-  #  - I assume and all your work is within one group and its subgroups
-  #     TODO: This could be updated moderately easily by going to associative arrays
-  #  - The cache is assumed valid for 1h and kept in $HOME/.gitlab-completion-cache
-  #     Cache invalidation can be done by providing __gitlab_cache_invalid as explained under `_cache_invalid` in [the zshcompsys man page](https://manpages.debian.org/unstable/zsh-common/zshcompsys.1.en.html#UTILITY_FUNCTIONS)
-  #     Alternatively `zstyle ':completion:*:git-clone:*' cache-policy _user_defined_function can be used to specify the completion function.
-  #     Setting `zstyle ':completion:*:git-clone:*' cache-policy true` ignores the cache.
-  #     Setting `zstyle ':completion:*:git-clone:*' cache-path /some/path` allows to manually set the cache path
-  #  - Some logging (monitoring API calls) is done via `logger` if enabled
-  #     Use `zstyle ':completion:*:git-clone:*' log-requests on` to enable logging
-  #     This is not a standard style!
-  #     The logging does not include the GITLABTOKEN
-  #  - Ideally users have
-  #     zstyle ':completion:*' group-name ''                                     # separate groups and projects
-  #     zstyle ':completion:*:descriptions' format $'%{\e[0;33m%}%d:%{\e[0m%}'   # show "headlines" for complections
-  #  - paths (full_path/path) and descriptions are parsed from gitlab.
-  #     I suspect the parsed json is safely used and doesn't allow code injection by someone editing descriptions.
-  #     I do not guarantee it!
-  #     I assume `full_path`, `path`, and `id` from gitlab only a-zA-Z0-9 (and / for full_path).
-  #  - Only up to 200 projects/subgroups per group get shown
-  #     TODO: the api assumes progressive access through pagination, can the same be done here?
-  #  - runtime dependency on `jq`, `curl`, and `logger`
-  #  - When tabbing after `git clone git@gitlab.com/GROUP/some_letters`, it is assumed `some_letters` is the start of a subgroup name
-  #    and only subgroups starting with these letters are queried from the API on a cache miss. These don't populate the cache and a
-  #    later refined tab or project lookup will need to query the API again to look up the group id.
-  #     TODO: This feature is commented out atm because the gitlab search API doesn't seem to behave as expected.
-  #  - I mostly assume that group and namespace are identical. In an edge case a request for a group's projects returned projects in a
-  #    different namespace. These are now filtered out but after all I ignore the concept of namespaces, so in terms of subgroups they
-  #    might still be treated incorrectly.
+# behaviour, assumptions, mandatory customisation
+#  - I assume the environment variables
+#     GITLABINSTANCE the gitlab instance you're working with (gitlab.com is the default)
+#     GITLABNAME     name of your top level gitlab group
+#     GITLABTOKEN    your personal API token (can be left empty for world-readable groups/projects)
+#     GITLABGROUPID  the group id of the aforementionned gitlab group
+#    are set
+#  - I assume you use zsh's git completion. This file should go into your $FPATH and will override
+#     the (intentionally overridable) function __git_remote_repositories [here](https://github.com/zsh-users/zsh/blob/2644e3097dd26babf73ea8664f30341b262a2450/Completion/Unix/Command/_git#L7295).
+#  - I assume and all your work is within one group and its subgroups
+#     TODO: This could be updated moderately easily by going to associative arrays
+#  - The cache is assumed valid for 1h and kept in $HOME/.gitlab-completion-cache
+#     Cache invalidation can be done by providing __gitlab_cache_invalid as explained under `_cache_invalid` in [the zshcompsys man page](https://manpages.debian.org/unstable/zsh-common/zshcompsys.1.en.html#UTILITY_FUNCTIONS)
+#     Alternatively `zstyle ':completion:*:git-clone:*' cache-policy _user_defined_function can be used to specify the completion function.
+#     Setting `zstyle ':completion:*:git-clone:*' cache-policy true` ignores the cache.
+#     Setting `zstyle ':completion:*:git-clone:*' cache-path /some/path` allows to manually set the cache path
+#  - Some logging (monitoring API calls) is done via `logger` if enabled
+#     Use `zstyle ':completion:*:git-clone:*' log-requests on` to enable logging
+#     This is not a standard style!
+#     The logging does not include the GITLABTOKEN
+#  - Ideally users have
+#     zstyle ':completion:*' group-name ''                                     # separate groups and projects
+#     zstyle ':completion:*:descriptions' format $'%{\e[0;33m%}%d:%{\e[0m%}'   # show "headlines" for complections
+#  - paths (full_path/path) and descriptions are parsed from gitlab.
+#     I suspect the parsed json is safely used and doesn't allow code injection by someone editing descriptions.
+#     I do not guarantee it!
+#     I assume `full_path`, `path`, and `id` from gitlab only a-zA-Z0-9 (and / for full_path).
+#  - Only up to 200 projects/subgroups per group get shown
+#     TODO: the api assumes progressive access through pagination, can the same be done here?
+#  - runtime dependency on `jq`, `curl`, and `logger`
+#  - When tabbing after `git clone git@gitlab.com/GROUP/some_letters`, it is assumed `some_letters` is the start of a subgroup name
+#    and only subgroups starting with these letters are queried from the API on a cache miss. These don't populate the cache and a
+#    later refined tab or project lookup will need to query the API again to look up the group id.
+#     TODO: This feature is commented out atm because the gitlab search API doesn't seem to behave as expected.
+#  - I mostly assume that group and namespace are identical. In an edge case a request for a group's projects returned projects in a
+#    different namespace. These are now filtered out but after all I ignore the concept of namespaces, so in terms of subgroups they
+#    might still be treated incorrectly.
 
 
-  local request grouproot groupsresponse
-  local logrequests cache_policy user_specified_cache # unused
-  grouproot=$IPREFIX
-
-  local cache_file_path
-  cache_file_path=$HOME/.gitlab-completion-cache
-  zstyle ":completion:${curcontext}:" use-cache on
-  zstyle -s ":completion:${curcontext}:" cache-path user_specified_cache || zstyle ":completion:${curcontext}:" cache-path "$cache_file_path"
-  zstyle -s ":completion:${curcontext}:" cache-policy cache_policy || zstyle ":completion:${curcontext}:" cache-policy __gitlab_cache_invalid
-
-  if _cache_invalid gitlabgroups || ! _retrieve_cache gitlabgroups; then
-    request="https://${GITLABINSTANCE:-gitlab.com}/api/v4/groups/$GITLABGROUPID/descendant_groups"'?per_page=200'
-    # # When restricting the subgroup search, remove trailing slashes.
-    # # In case the group's name is already complete, that would remove the group from the search results and prevent groupid lookup.
-    # [[ -n $PREFIX ]] && request+='?search='${PREFIX%/}
-    groupsresponse=$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get $request 2>/dev/null)
-    zstyle -b ":completion:${curcontext}:" log-requests logrequests && logger -i -t zsh-gitlab-tabcompletion -- "$USERNAME requests $request"
-    # curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get https://${GITLABINSTANCE:-gitlab.com}/api/v4/groups/${GITLABGROUPID}/descendant_groups'?per_page=200' 2>/dev/null > /tmp/desc_groups
-    # groupsresponse=$(cat /tmp/desc_groups)
-    local -a groups
-    groups=(${${(f)"$(jq -r '.[] | ( select(.description!="" and .description!=null) | "\(.full_path):\(.description|gsub("[\\n\\r]";""))"),( select(.description=="" or .description==null) | "\(.full_path)")' 2>/dev/null <<< $groupsresponse)"}#${GITLABNAME}/})
-    # # only store to cache when unrestricted search was done
-    # [[ -n $PREFIX ]] ||
-    _store_cache gitlabgroups groups groupsresponse
-  else
-    zstyle -b ":completion:${curcontext}:" log-requests logrequests && logger -i -t zsh-gitlab-tabcompletion -- "using cache for group lookup"
-  fi
-  _describe -t 'gitlab-groups' 'private gitlab groups to clone from' groups -qS '/'
-  if compset -P '*/' ; then
-    local potentialsubgroup potentialsubgroupid
-    potentialsubgroup=${${IPREFIX#$grouproot}%/}
-    potentialsubgroupid=$(jq ".[] | select(.full_path==\"$GITLABNAME/${potentialsubgroup}\")|.id" 2>/dev/null <<< $groupsresponse)
-    if [[ -n $potentialsubgroupid ]] ; then
-      __gitlab_projects $potentialsubgroupid $GITLABNAME/$potentialsubgroup
-    fi
-  else
-    __gitlab_projects $GITLABGROUPID $GITLABNAME
-  fi
-}
-
-
-if compset -P "git@${GITLABINSTANCE:-gitlab.com}:${GITLABNAME}/" ; then
-  __gitlab
+if compset -P "git@${GITLABINSTANCE:-gitlab.com}:" ; then
+  __gitlab_projects '.git'
 else
   # "https\://\:@gitlab.cern.ch\:8443:cern gitlab with kerberos"
   local hosters; hosters=(

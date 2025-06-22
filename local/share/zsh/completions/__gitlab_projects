@@ -1,0 +1,67 @@
+#autoload
+
+# provided argument will be used as suffix
+
+__gitlab_repos() {
+  # $1 = group id
+  # $2 = group name
+  # remaining args get passed to _describe (e.g. -S)
+  local logrequests cache_policy user_specified_cache # unused
+  local cache_file_path
+  cache_file_path=$HOME/.gitlab-completion-cache
+  zstyle ":completion:${curcontext}:" use-cache on
+  zstyle -s ":completion:${curcontext}:" cache-path user_specified_cache || zstyle ":completion:${curcontext}:" cache-path "$cache_file_path"
+  zstyle -s ":completion:${curcontext}:" cache-policy cache_policy || zstyle ":completion:${curcontext}:" cache-policy __gitlab_cache_invalid
+  if _cache_invalid projects_of_$1 || ! _retrieve_cache projects_of_$1; then
+    local -a projects
+    local request
+    request="https://${GITLABINSTANCE:-gitlab.com}/api/v4/groups/$1/projects"'?per_page=200'
+    projects=(${(f)"$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get $request 2>/dev/null | jq -r '.[] '"| select(.namespace.full_path == \"$2\") |"' (select(.description!=""and .description!=null)|"\(.path_with_namespace):\(.description|gsub("[\\n\\r]";""))"),(select(.description=="" or .description==null)|"\(.path_with_namespace)")' 2>/dev/null)"})
+    zstyle -b ":completion:${curcontext}:" log-requests logrequests && logger -i -t zsh-gitlab-tabcompletion -- "$USERNAME requests $request"
+    _store_cache projects_of_$1 projects
+  else
+    zstyle -b ":completion:${curcontext}:" log-requests logrequests && logger -i -t zsh-gitlab-tabcompletion -- "using cache for project lookup of group $2 ($1)"
+  fi
+  local gname=$2
+  shift 2
+  _describe -t gitlab-projects-in-$gname "private gitlab repositories in $gname" projects $@
+}
+
+local request grouproot groupsresponse
+local logrequests cache_policy user_specified_cache # unused
+grouproot=$IPREFIX
+
+local cache_file_path
+cache_file_path=$HOME/.gitlab-completion-cache
+zstyle ":completion:${curcontext}:" use-cache on
+zstyle -s ":completion:${curcontext}:" cache-path user_specified_cache || zstyle ":completion:${curcontext}:" cache-path "$cache_file_path"
+zstyle -s ":completion:${curcontext}:" cache-policy cache_policy || zstyle ":completion:${curcontext}:" cache-policy __gitlab_cache_invalid
+
+if _cache_invalid gitlabgroups || ! _retrieve_cache gitlabgroups; then
+  request="https://${GITLABINSTANCE:-gitlab.com}/api/v4/groups/$GITLABGROUPID/descendant_groups"'?per_page=200'
+  # # When restricting the subgroup search, remove trailing slashes.
+  # # In case the group's name is already complete, that would remove the group from the search results and prevent groupid lookup.
+  # [[ -n $PREFIX ]] && request+='?search='${PREFIX%/}
+  groupsresponse=$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get $request 2>/dev/null)
+  zstyle -b ":completion:${curcontext}:" log-requests logrequests && logger -i -t zsh-gitlab-tabcompletion -- "$USERNAME requests $request"
+  # curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get https://${GITLABINSTANCE:-gitlab.com}/api/v4/groups/${GITLABGROUPID}/descendant_groups'?per_page=200' 2>/dev/null > /tmp/desc_groups
+  # groupsresponse=$(cat /tmp/desc_groups)
+  local -a groups
+  groups=(${(f)"$(jq -r '.[] | ( select(.description!="" and .description!=null) | "\(.full_path):\(.description|gsub("[\\n\\r]";""))"),( select(.description=="" or .description==null) | "\(.full_path)")' 2>/dev/null <<< $groupsresponse)"})
+  # # only store to cache when unrestricted search was done
+  # [[ -n $PREFIX ]] ||
+  _store_cache gitlabgroups groups groupsresponse
+else
+  zstyle -b ":completion:${curcontext}:" log-requests logrequests && logger -i -t zsh-gitlab-tabcompletion -- "using cache for group lookup"
+fi
+_describe -t 'gitlab-groups' 'private gitlab groups to clone from' groups -qS '/'
+if [[ ${PREFIX} = */*/* ]]; then
+  local potentialsubgroup potentialsubgroupid
+  potentialsubgroup=${PREFIX%/*}
+  potentialsubgroupid=$(jq ".[] | select(.full_path==\"${potentialsubgroup}\")|.id" 2>/dev/null <<< $groupsresponse)
+  if [[ -n $potentialsubgroupid ]] ; then
+    __gitlab_repos $potentialsubgroupid $potentialsubgroup -S $1
+  fi
+else
+  __gitlab_repos $GITLABGROUPID $GITLABNAME -S $1
+fi

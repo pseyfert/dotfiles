@@ -1,0 +1,19 @@
+#autoload
+
+# $1 = project namespace
+
+local logrequests cache_policy user_specified_cache # unused
+local cache_file_path
+cache_file_path=$HOME/.gitlab-completion-cache
+zstyle ":completion:${curcontext}:" use-cache on
+zstyle -s ":completion:${curcontext}:" cache-path user_specified_cache || zstyle ":completion:${curcontext}:" cache-path "$cache_file_path"
+zstyle -s ":completion:${curcontext}:" cache-policy cache_policy || zstyle ":completion:${curcontext}:" cache-policy __gitlab_cache_invalid
+local namespacepath=$1
+if _cache_invalid users_of_$namespacepath || ! _retrieve_cache users_of_$namespacepath; then
+  projectid=$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get https://${GITLABINSTANCE:-gitlab.com}/api/v4/projects/$namespacepath 2> /dev/null | jq -r '.id' 2> /dev/null)
+  users=(${(f)"$(curl --header "PRIVATE-TOKEN: $GITLABTOKEN" --get https://${GITLABINSTANCE:-gitlab.com}/api/v4/projects/$projectid/users 2> /dev/null | jq -r '.[] | (select(.name!="" and .name!=null)|"\(.username):\(.name)"),(select(.name=="" or .name==null)|"\(.username)")' 2> /dev/null)"})
+  _store_cache users_of_$namespacepath users
+else
+  # TODO: logging
+fi
+_describe -t gitlab-users-$1 "${2:-Users}" users
